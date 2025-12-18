@@ -1,0 +1,1 @@
+// (type+variant+overrides → props)
