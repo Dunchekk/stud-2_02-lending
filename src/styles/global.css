@@ -1,1 +1,17 @@
 /* (reset/типографика/переменные) */
+
+:root {
+  /* Цвета проекта */
+  --color-bg: #887272;
+  --color-add-bg: #bcbab8;
+
+  --color-text: #191919; /* Флюидные единицы пространства */
+  --space: clamp(4px, 0.5vw, 12px);
+  --radius: clamp(8px, 1.5vw, 25px); /* Контейнерные размеры */
+  --max-width: min(90vw, 1000px);
+  --side-padding: clamp(16px, 4vw, 48px);
+}
+body {
+  background: var(--color-bg);
+  font-size: 1.3rem;
+}
