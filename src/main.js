@@ -6,13 +6,30 @@ import "./styles/blocks.css";
 import "./styles/cursor.css";
 import "./styles/manifesto.css";
 
+import { mountLandingLayer } from "./add-layers/mountLendingLayer.js";
+
 import { mountTextLayer } from "./add-layers/mountTextLayer.js";
 import textData from "./data/textLayer.json";
 
 const app = document.getElementById("app");
 
+// 0) pixi gradient background
+mountLandingLayer({
+  mountTo: app,
+  zIndex: 1,
+  attrs: {
+    // можешь тут менять тему
+    color1: "#16254b",
+    color2: "#23418a",
+    color3: "#aadfd9",
+    color4: "#e64f0f",
+    noretina: "true",
+  },
+});
+
+// 1) текстовый слой поверх
 mountTextLayer({
   mountTo: app,
   data: textData,
-  zIndex: 1,
+  zIndex: 0,
 });

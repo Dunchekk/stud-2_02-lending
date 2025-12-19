@@ -1,1 +1,12 @@
 /* (стили всех блоков лендинга) */
+
+.c-PixiIntro-gradient {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+
+  /* важно: чтобы клики проходили сквозь градиент */
+  pointer-events: none;
+}
