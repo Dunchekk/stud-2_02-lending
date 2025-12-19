@@ -1,1 +1,19 @@
 /* (стили всех блоков лендинга) */
+
+.landing-layer {
+  position: relative;
+  z-index: 0;
+}
+
+.ll-pixi-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+
+  /* всегда ниже контента landing-layer */
+  z-index: -1;
+
+  pointer-events: none;
+  display: block;
+}
