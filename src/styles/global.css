@@ -1,17 +1,82 @@
 /* (reset/типографика/переменные) */
 
 :root {
-  /* Цвета проекта */
-  --color-bg: #887272;
-  --color-add-bg: #bcbab8;
+  /* MEASURES */
 
-  --color-text: #191919; /* Флюидные единицы пространства */
+  --max-width: min(90vw, 1300px);
+
   --space: clamp(4px, 0.5vw, 12px);
   --radius: clamp(8px, 1.5vw, 25px); /* Контейнерные размеры */
-  --max-width: min(90vw, 1000px);
   --side-padding: clamp(16px, 4vw, 48px);
+
+  --tl-height: min(calc(100dvh - calc(var(--side-padding) * 4)), 90dvh);
+
+  /* COLORS */
+
+  /* Text-layer */
+  --tl-color-green: #b4b882;
+  --tl-color-black: #000000;
+  --tl-color-red: #ff0000;
+  --tl-color-white: #eed6d6;
+
+  /* Lending-layer */
+
+  --ll-color-all-white: rgb(255, 255, 255);
+
+  --ll-color-all-blocks-filled: rgba(255, 255, 255, 0.25);
+
+  --ll-color-blue-1: #2d576e;
+  --ll-color-blue-2: #757dac;
+  --ll-color-blue-3: #74afd9;
+  --ll-color-blue-4: #86cbc6;
+  --ll-color-blue-5: #6898a0;
+  --ll-color-blue-text: #6898a0;
+
+  --ll-color-purp-1: #5f4e8a;
+  --ll-color-purp-2: #7c64c5;
+  --ll-color-purp-3: #c0a5f6;
+  --ll-color-purp-4: #4b1d68;
+  --ll-color-purp-5: #9061ac;
+  --ll-color-purp-text: #5f4e8a;
+
+  --ll-color-pink-1: #ac619f;
+  --ll-color-pink-2: #ffa7f0;
+  --ll-color-pink-3: #ffa7b9;
+  --ll-color-pink-4: #ff7994;
+  --ll-color-pink-5: #ab4571;
+  --ll-color-pink-text: #ac619f;
 }
+
+html,
 body {
-  background: var(--color-bg);
+  background: var(--tl-color-red);
+  color: var(--tl-color-black);
+}
+
+body {
   font-size: 1.3rem;
+}
+
+html[data-tl-theme="green"],
+body[data-tl-theme="green"] {
+  background: var(--tl-color-green);
+  color: var(--tl-color-black);
+}
+
+html[data-tl-theme="black"],
+body[data-tl-theme="black"] {
+  background: var(--tl-color-black);
+  color: var(--tl-color-white);
+}
+
+html[data-tl-theme="red"],
+body[data-tl-theme="red"] {
+  background: var(--tl-color-red);
+  color: var(--tl-color-black);
+}
+
+#app {
+  width: var(--max-width);
+  margin-inline: auto;
+  background: inherit;
 }
