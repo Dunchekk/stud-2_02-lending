@@ -15,6 +15,7 @@ export function defineMonopoGradientElement() {
         "color2",
         "color3",
         "color4",
+        "color5",
         "seed",
         "displacement",
         "noretina",
@@ -48,37 +49,6 @@ export function defineMonopoGradientElement() {
       this._noiseCanvas.width = 512;
       this._noiseCanvas.height = 512;
 
-      // this._onPointerMove = (e) => {
-      //   const w = Math.max(1, window.innerWidth);
-      //   const h = Math.max(1, window.innerHeight);
-
-      //   const nx = Math.min(1, Math.max(0, e.clientX / w));
-      //   const ny = Math.min(1, Math.max(0, e.clientY / h));
-
-      //   // Y -> seed [-1..1]
-      //   this._pendingSeed = -1 + ny * 2;
-
-      //   // X -> displacement target [0..5]
-      //   this._pendingDisp = nx * 5;
-
-      //   if (this._tickScheduled) return;
-      //   this._tickScheduled = true;
-
-      //   requestAnimationFrame(() => {
-      //     this._tickScheduled = false;
-
-      //     // seed оставляем атрибутом (пересобирает градиент)
-      //     if (this._pendingSeed !== null) {
-      //       this.setAttribute("seed", String(this._pendingSeed.toFixed(6)));
-      //     }
-
-      //     // displacement НЕ через атрибут, а в target для плавного догоняния
-      //     if (this._pendingDisp !== null) {
-      //       this._dispTarget = this._pendingDisp;
-      //     }
-      //   });
-      // };
-
       this._onPointerMove = (e) => {
         const w = Math.max(1, window.innerWidth);
         const h = Math.max(1, window.innerHeight);
@@ -90,7 +60,7 @@ export function defineMonopoGradientElement() {
         this._seedTarget = -1 + ny * 2;
 
         // X -> displacement target [0..5]
-        this._dispTarget = nx * 5;
+        this._dispTarget = 0.8 + nx * 4.2; // 1..5
       };
 
       this._onResize = () => {
@@ -109,6 +79,11 @@ export function defineMonopoGradientElement() {
 
       this._lastRebuildAt = 0;
       this._rebuildIntervalMs = 40; // 25 FPS пересборки максимум (можно 50..80)
+
+      this._maskCanvas = document.createElement("canvas");
+      this._maskCanvas.width = 512;
+      this._maskCanvas.height = 512;
+      this._maskSprite = null;
     }
 
     connectedCallback() {
@@ -135,6 +110,18 @@ export function defineMonopoGradientElement() {
 
       this.appendChild(this._app.view);
 
+      // фон СРАЗУ, и добавляем первым
+      this._bg = new PIXI.Graphics();
+      this._bg.beginFill(0x000000, 1);
+      this._bg.drawRect(
+        0,
+        0,
+        this._app.renderer.width,
+        this._app.renderer.height
+      );
+      this._bg.endFill();
+      this._app.stage.addChild(this._bg);
+
       const seed = this._readNumberAttr("seed", 0);
       const disp = this._readNumberAttr("displacement", 0);
 
@@ -155,11 +142,16 @@ export function defineMonopoGradientElement() {
       this._app.stage.addChild(this._gradientSprite);
       this._app.stage.addChild(this._dispSprite);
 
+      // this._edge = new PIXI.Graphics();
+      // this._app.stage.addChild(this._edge);
+
+      this._buildEdgeMask();
+
       // ВАЖНО: убираем “плыть” displacement (никаких x/y += ...)
       // Вместо этого — лёгкий ticker только для сглаживания силы
       this._app.ticker.add(() => {
         // displacement smoothing как было
-        const dispSmoothing = 0.07;
+        const dispSmoothing = 0.1;
         this._dispCurrent +=
           (this._dispTarget - this._dispCurrent) * dispSmoothing;
         this._setDisplacementStrength(this._dispCurrent);
@@ -251,10 +243,21 @@ export function defineMonopoGradientElement() {
       const ny = Math.min(1, Math.max(0, e.clientY / h));
 
       // Y -> seed target [-1..1]
-      this._seedTarget = -1 + ny * 2;
+      const seedFromY = -1 + ny * 2; // как было
+
+      // зона фиксации внизу
+      const lockStart = 0.9; // с 78% вниз начинаем "держать кучку"
+      const lockEnd = 1.0; // у самого низа фиксируем полностью
+      const lock = smoothstep(lockStart, lockEnd, ny);
+
+      // seed, который соответствует твоей "кучке" внизу
+      // обычно это почти максимум (ny≈1 => seed≈+1), но можно подстроить
+      const bottomSeed = 1.0;
+
+      this._seedTarget = lerp(seedFromY, bottomSeed, lock);
 
       // X -> displacement target [0..5]
-      this._dispTarget = nx * 5;
+      this._dispTarget = 0.8 + nx * 4.2; // 1..5
 
       // важно: НЕ setAttribute("seed")
     }
@@ -270,7 +273,9 @@ export function defineMonopoGradientElement() {
       const gH = this._gradientSprite.texture.height || 1;
       const gScale = Math.max(w / gW, h / gH);
 
-      this._gradientSprite.scale.set(gScale);
+      const overscan = 1; // 1.1..1.4
+      this._gradientSprite.scale.set(gScale * overscan);
+
       this._gradientSprite.x = (w - gW * gScale) / 2;
       this._gradientSprite.y = (h - gH * gScale) / 2;
 
@@ -284,6 +289,24 @@ export function defineMonopoGradientElement() {
 
         this._dispSprite.scale.set(dScaleX, dScaleY);
         this._dispSprite.position.set(0, 0);
+      }
+
+      if (this._bg) {
+        this._bg.clear();
+        this._bg.beginFill(0x000000, 1);
+        this._bg.drawRect(0, 0, w, h);
+        this._bg.endFill();
+      }
+
+      if (this._maskSprite) {
+        const mW = this._maskSprite.texture.width || 1;
+        const mH = this._maskSprite.texture.height || 1;
+        const mScale = Math.max(w / mW, h / mH);
+        this._maskSprite.scale.set(mScale);
+        this._maskSprite.position.set(
+          (w - mW * mScale) / 2,
+          (h - mH * mScale) / 2
+        );
       }
     }
 
@@ -305,9 +328,9 @@ export function defineMonopoGradientElement() {
       const d = Math.max(0, Math.min(5, displacement_0_5)) / 5; // 0..1
 
       // Нелинейность: усиливает верхний диапазон
-      const shaped = Math.pow(d, 1.05);
+      const shaped = Math.pow(d, 1.01);
 
-      const maxX = 1600;
+      const maxX = 1800;
       const maxY = 1300;
 
       this._dispFilter.scale.set(shaped * maxX, shaped * maxY);
@@ -320,10 +343,11 @@ export function defineMonopoGradientElement() {
     _buildGradient(seed, opts = {}) {
       if (!this._app) return;
 
-      const c1 = this.getAttribute("color1") || "#16254b";
+      const c1 = this.getAttribute("color1") || "#0e1c3fff";
       const c2 = this.getAttribute("color2") || "#23418a";
       const c3 = this.getAttribute("color3") || "#aadfd9";
       const c4 = this.getAttribute("color4") || "#e64f0f";
+      const c5 = this.getAttribute("color5") || "#000000ff";
 
       const ctx = this._gradCanvas.getContext("2d", {
         willReadFrequently: false,
@@ -335,7 +359,7 @@ export function defineMonopoGradientElement() {
       const t = (seed + 1) / 2;
 
       // 1) Направление градиента (делаем заметный поворот)
-      const angle = seed * (Math.PI / 2); // ±5°
+      const angle = seed * (Math.PI / 5); // ±5°
 
       const len = Math.sqrt(W * W + H * H);
       const cx = W / 2;
@@ -360,16 +384,31 @@ export function defineMonopoGradientElement() {
       const g = ctx.createLinearGradient(x0, y0, x1, y1);
 
       // 3) “Чуть” сдвигаем цветовые стопы (но заметнее, чем было)
-      const wobble = 0.14;
-      const s1 = 0.0 + wobble * t;
-      const s2 = 0.3 + wobble * 0.9 * (1 - t);
-      const s3 = 0.68 - wobble * t;
-      const s4 = 1.0;
+      const wobble = 0.2; // стабильнее, меньше дерганий
 
-      g.addColorStop(clamp01(s1), c1);
-      g.addColorStop(clamp01(s2), c2);
-      g.addColorStop(clamp01(s3), c3);
-      g.addColorStop(clamp01(s4), c4);
+      // c5 занимает большой хвост справа: ~30% (0.70..1.00)
+      let s1 = 0.05 + wobble * (t - 0.5) * 0.6;
+      let s2 = 0.24 + wobble * (0.5 - t) * 0.7;
+      let s3 = 0.5 + wobble * (t - 0.5) * 0.8;
+
+      // узкий переход к краевому цвету
+      let s4 = 0.7 + wobble * (t - 0.5) * 0.35;
+
+      // край
+      let s5 = 1.0;
+
+      // гарантируем порядок
+      s1 = clamp01(s1);
+      s2 = Math.max(s1 + 0.001, clamp01(s2));
+      s3 = Math.max(s2 + 0.001, clamp01(s3));
+      s4 = Math.max(s3 + 0.001, clamp01(s4));
+      s5 = Math.max(s4 + 0.001, clamp01(s5));
+
+      g.addColorStop(s1, c1);
+      g.addColorStop(s2, c2);
+      g.addColorStop(s3, c3);
+      g.addColorStop(s4, c4);
+      g.addColorStop(s5, c5);
 
       ctx.clearRect(0, 0, W, H);
       ctx.fillStyle = g;
@@ -389,6 +428,41 @@ export function defineMonopoGradientElement() {
       }
     }
 
+    _buildEdgeMask() {
+      const c = this._maskCanvas;
+      const ctx = c.getContext("2d");
+      const W = c.width,
+        H = c.height;
+
+      const g = ctx.createRadialGradient(
+        W / 2,
+        H / 2,
+        W * 0.18,
+        W / 2,
+        H / 2,
+        W * 0.58
+      );
+      g.addColorStop(0.0, "rgba(255,255,255,1)");
+      g.addColorStop(0.72, "rgba(255,255,255,1)");
+      g.addColorStop(1.0, "rgba(255,255,255,0)");
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+
+      if (!this._maskSprite) {
+        const base = PIXI.BaseTexture.from(c);
+        const tex = new PIXI.Texture(base);
+        this._maskSprite = new PIXI.Sprite(tex);
+        this._maskSprite.anchor.set(0, 0);
+
+        this._gradientSprite.mask = this._maskSprite;
+        this._app.stage.addChild(this._maskSprite);
+      } else {
+        this._maskSprite.texture.baseTexture.update();
+      }
+    }
+
     _buildDisplacement(seed, opts = {}) {
       if (!this._app) return;
 
@@ -396,7 +470,7 @@ export function defineMonopoGradientElement() {
       const rw = this._app.renderer.width;
       const rh = this._app.renderer.height;
 
-      const maxSize = 768; // компромисс: достаточно детально и не убивает CPU
+      const maxSize = 2000; // компромисс: достаточно детально и не убивает CPU
       const scale = Math.min(1, maxSize / Math.max(rw, rh));
 
       const W = Math.max(256, Math.floor(rw * scale));
@@ -425,15 +499,16 @@ export function defineMonopoGradientElement() {
         for (let x = 0; x < W; x++) {
           const i = (y * W + x) * 4;
 
-          const nx = x / W;
-          const ny = y / H;
+          const texScale = 1; // 1.5..5 (больше = мельче)
+          const nx = (x / W) * texScale;
+          const ny = (y / H) * texScale;
 
           const v1 = Math.sin((nx * f1 + ny * 0.7 * f1) * Math.PI * 2 + phase);
           const v2 = Math.cos(
             (ny * f2 - nx * 0.6 * f2) * Math.PI * 2 - phase * 0.7
           );
 
-          const v = (v1 * 0.55 + v2 * 0.45) * 0.5 + 0.5;
+          const v = (v1 * 0.9 + v2 * 0.1) * 0.5 + 0.5;
 
           const r = clamp01(v + (rng() - 0.5) * 0.12);
           const g = clamp01(1 - v + (rng() - 0.5) * 0.12);
@@ -459,7 +534,7 @@ export function defineMonopoGradientElement() {
         const tex = new PIXI.Texture(base);
         this._dispSprite = new PIXI.Sprite(tex);
         this._dispSprite.anchor.set(0, 0);
-        this._dispSprite.alpha = 1;
+        this._dispSprite.alpha = 0;
       } else {
         const base = this._dispSprite.texture.baseTexture;
         base.wrapMode = PIXI.WRAP_MODES.CLAMP;
@@ -508,4 +583,13 @@ function addGrain(ctx, w, h, rng) {
     d[i + 2] = Math.max(0, Math.min(255, d[i + 2] + n));
   }
   ctx.putImageData(img, 0, 0);
+}
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function smoothstep(edge0, edge1, x) {
+  const t = clamp01((x - edge0) / (edge1 - edge0));
+  return t * t * (3 - 2 * t);
 }

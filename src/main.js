@@ -19,10 +19,11 @@ mountLandingLayer({
   zIndex: 1,
   attrs: {
     // можешь тут менять тему
-    color1: "#16254b",
+    color1: "#0e1c3fff",
     color2: "#23418a",
     color3: "#aadfd9",
     color4: "#e64f0f",
+    color5: "#000000ff",
     noretina: "true",
   },
 });

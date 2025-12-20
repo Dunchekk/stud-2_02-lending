@@ -11,10 +11,11 @@ export function mountLandingLayer({ mountTo, zIndex = 0, attrs = {} } = {}) {
 
   // default attrs close to your monopo example
   const defaults = {
-    color1: "#16254b",
+    color1: "#0e1c3fff",
     color2: "#23418a",
     color3: "#aadfd9",
     color4: "#e64f0f",
+    color5: "#000000ff",
     displacement: "0",
     seed: "0",
     noretina: "true",
