@@ -1,0 +1,200 @@
+{
+  "hero-block": {
+    "label": "Hero block",
+    "description": "Первый экран: навигационные кнопки, большой заголовок/описание, две CTA-кнопки, правый информационный столбец (хештег/оглавление/почта).",
+    "slots": {
+      "titleHtml": "string",
+      "description": "string",
+      "primaryCtaText": "string",
+      "primaryCtaHref": "string",
+      "secondaryCtaText": "string",
+      "secondaryCtaHref": "string",
+
+      "rightTopTag": "string",
+      "rightNavTextHtml": "string",
+      "rightEmail": "string",
+
+      "yearMark": "string",
+      "helpButtonText": "string",
+      "quizButtonText": "string"
+    },
+    "props": {
+      "glassPrimaryCta": ["none", "pill-liquid"],
+      "showNavButtons": ["on", "off"]
+    },
+    "notes": [
+      "Кнопки data-theme-toggle внутри hero — НЕ часть варианта контента; это UI-элементы (app-level).",
+      "Содержание правого столбца сделано как контентные слоты (можно варьировать)."
+    ]
+  },
+
+  "what-is-it-block": {
+    "label": "What is it block",
+    "description": "Блок «Что это?» + три секции (каждая: bubble(h3+p) и numeric-container с номером и кнопкой).",
+    "slots": {
+      "title": "string",
+      "description": "string",
+      "sections": "array[3] of { heading: string, text: string, buttonText: string }"
+    },
+    "props": {
+      "glass": ["strong", "soft", "none"],
+      "layoutPattern": ["bubble-left", "bubble-right-mixed"]
+    },
+    "notes": [
+      "Номера 1/2/3 — структурные, не из варианта (можно оставить фикс).",
+      "Внутри одного варианта всегда 3 пары (h3+p) + 3 текста кнопок."
+    ]
+  },
+
+  "break-block": {
+    "label": "Break block",
+    "description": "Короткий интермедиальный блок: h4 + p. Вариантов будет много.",
+    "slots": {
+      "title": "string",
+      "description": "string"
+    },
+    "props": {
+      "tone": ["neutral", "sales", "ironic"]
+    }
+  },
+
+  "big-blur-content-block": {
+    "label": "Big blur content block",
+    "description": "Большой блок с блюром: внешний h2 + внутренний контейнер (h3 + p + CTA) + кнопка '?' + картинка справа.",
+    "slots": {
+      "title": "string",
+      "cardTitle": "string",
+      "cardText": "string",
+      "ctaText": "string",
+      "ctaHref": "string",
+      "imageSrc": "string",
+      "imageAlt": "string"
+    },
+    "props": {
+      "glass": ["strong", "soft", "none"],
+      "rightPartStyle": ["image-plain", "image-filled"],
+      "showQuestionButton": ["on", "off"]
+    },
+    "notes": [
+      "В HTML есть два варианта правой части: обычный <img> внутри right-part и заполненный right-part-filled. Это вынесено в prop rightPartStyle."
+    ]
+  },
+
+  "three-filled-elements-block": {
+    "label": "Three filled elements block",
+    "description": "Заголовок + описание + три карточки, каждая (h3+p).",
+    "slots": {
+      "title": "string",
+      "description": "string",
+      "items": "array[3] of { title: string, text: string }"
+    },
+    "props": {
+      "showNumbersInTitles": ["on", "off"]
+    }
+  },
+
+  "why-we-block": {
+    "label": "Why we block",
+    "description": "Сравнение «они» vs «мы»: заголовок/описание + два списка. Левый список на 1 элемент короче правого.",
+    "slots": {
+      "title": "string",
+      "description": "string",
+      "leftTitle": "string",
+      "rightTitle": "string",
+      "leftItems": "array[n] of { title: string, text: string }",
+      "rightItems": "array[n+1] of { title: string, text: string }"
+    },
+    "props": {
+      "glassLeft": ["strong", "soft", "none"],
+      "iconLeft": ["x", "custom"],
+      "iconRight": ["check", "custom"]
+    },
+    "notes": [
+      "Правило «правый на 1 больше левого» держим как контракт данных (валидировать позже)."
+    ]
+  },
+
+  "tarifs-block": {
+    "label": "Tariffs block",
+    "description": "Тарифы: заголовок/описание + 3 тарифа. У каждого: имя, описание, список пунктов, цена. Средний тариф визуально белый/иной.",
+    "slots": {
+      "title": "string",
+      "description": "string",
+      "tariffs": "array[3] of { name: string, text: string, bullets: array[string], priceText: string }"
+    },
+    "props": {
+      "glass": ["strong", "soft", "none"],
+      "middleTariffStyle": ["white", "glass"],
+      "priceButtonStyle": ["default", "dark-pill-liquid"]
+    },
+    "notes": [
+      "Тексты пунктов в HTML уже с длинным тире. В данных лучше хранить строки БЕЗ тире, а тире добавлять рендерером — но можно и хранить как есть."
+    ]
+  },
+
+  "bubbles-block": {
+    "label": "Bubbles testimonials block",
+    "description": "Отзывы: заголовок/описание + сетка пузырей. Один вариант содержит либо 3 отзыва, либо 6 отзывов. Раскладка по колонкам зависит от количества.",
+    "slots": {
+      "title": "string",
+      "description": "string",
+      "testimonials": "array[3|6] of { avatarSrc: string, avatarAlt: string, personTitle: string, personSubtitle: string, quote: string }"
+    },
+    "props": {
+      "glass": ["strong", "soft", "none"],
+      "count": ["3", "6"],
+      "pattern": ["mixed-white-glass"]
+    },
+    "notes": [
+      "Правило раскладки: при 6 — по 2 в колонке, при 3 — по 1 в колонке. Это лучше решать рендерером по testimonials.length."
+    ]
+  },
+
+  "faq-block": {
+    "label": "FAQ block",
+    "description": "FAQ: заголовок/описание + два столбца вопросов. Каждый item: question + answer (answer в glass).",
+    "slots": {
+      "title": "string",
+      "description": "string",
+      "leftItems": "array of { question: string, answerHtml: string }",
+      "rightItems": "array of { question: string, answerHtml: string }"
+    },
+    "props": {
+      "glass": ["strong", "soft", "none"],
+      "collapsible": ["on", "off"],
+      "icon": ["plus"]
+    }
+  },
+
+  "prog-block": {
+    "label": "Corporate program block",
+    "description": "Корпоративная программа: заголовок/описание + большая форма (h3+p) + два массива пунктов (до 3 слева, до 3 справа).",
+    "slots": {
+      "title": "string",
+      "description": "string",
+      "cardTitle": "string",
+      "cardText": "string",
+      "infoLeft": "array[0..3] of string",
+      "infoRight": "array[0..3] of string"
+    },
+    "props": {
+      "glass": ["soft", "strong", "none"]
+    }
+  },
+
+  "stat-block": {
+    "label": "Stat block (rare)",
+    "description": "Редкий блок результатов: h4 + p + CTA кнопка + картинка справа.",
+    "slots": {
+      "title": "string",
+      "description": "string",
+      "ctaText": "string",
+      "ctaHref": "string",
+      "imageSrc": "string",
+      "imageAlt": "string"
+    },
+    "props": {
+      "glassCta": ["pill-liquid", "none"]
+    }
+  }
+}

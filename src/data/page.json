@@ -1,0 +1,83 @@
+{
+  "sections": [
+    {
+      "type": "hero-block",
+      "variant": "v1",
+      "props": { "glassPrimaryCta": "pill-liquid", "showNavButtons": "on" }
+    },
+
+    {
+      "type": "what-is-it-block",
+      "variant": "v1",
+      "props": { "glass": "strong", "layoutPattern": "bubble-right-mixed" }
+    },
+    { "type": "break-block", "variant": "v1", "props": { "tone": "neutral" } },
+    {
+      "type": "big-blur-content-block",
+      "variant": "v1",
+      "props": {
+        "glass": "strong",
+        "rightPartStyle": "image-plain",
+        "showQuestionButton": "on"
+      }
+    },
+    {
+      "type": "three-filled-elements-block",
+      "variant": "v1",
+      "props": { "showNumbersInTitles": "on" }
+    },
+    {
+      "type": "why-we-block",
+      "variant": "v1",
+      "props": { "glassLeft": "strong", "iconLeft": "x", "iconRight": "check" }
+    },
+
+    { "type": "break-block", "variant": "v1", "props": { "tone": "neutral" } },
+
+    {
+      "type": "tarifs-block",
+      "variant": "v1",
+      "props": {
+        "glass": "strong",
+        "middleTariffStyle": "white",
+        "priceButtonStyle": "dark-pill-liquid"
+      }
+    },
+
+    {
+      "type": "big-blur-content-block",
+      "variant": "v2",
+      "props": {
+        "glass": "strong",
+        "rightPartStyle": "image-filled",
+        "showQuestionButton": "on"
+      }
+    },
+
+    {
+      "type": "bubbles-block",
+      "variant": "v1",
+      "props": {
+        "glass": "strong",
+        "count": "6",
+        "pattern": "mixed-white-glass"
+      }
+    },
+
+    { "type": "break-block", "variant": "v1", "props": { "tone": "neutral" } },
+
+    {
+      "type": "faq-block",
+      "variant": "v1",
+      "props": { "glass": "strong", "collapsible": "on", "icon": "plus" }
+    },
+    { "type": "prog-block", "variant": "v1", "props": { "glass": "soft" } },
+    {
+      "type": "stat-block",
+      "variant": "v1",
+      "props": { "glassCta": "pill-liquid" }
+    },
+
+    { "type": "break-block", "variant": "v1", "props": { "tone": "neutral" } }
+  ]
+}

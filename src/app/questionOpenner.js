@@ -5,43 +5,111 @@ const OPEN_PADDING_VALUE = "calc(var(--space) * 3)";
 const CLOSED_PADDING_VALUE = "0px";
 const OPEN_MARGIN_VALUE = "var(--ll-average-gap)";
 const CLOSED_MARGIN_VALUE = "0px";
+const INIT_MARK_ATTR = "data-faq-init";
 
-export function initQuestionOpenner() {
-  const containers = document.querySelectorAll(CONTAINER_SELECTOR);
-  if (!containers.length) return;
+/**
+ * FAQ теперь может монтироваться динамически (через engine/mount.js),
+ * поэтому делаем делегирование + автоподготовку через MutationObserver.
+ *
+ * @param {{ root?: Document | HTMLElement }} options
+ * @returns {() => void} cleanup
+ */
+export function initQuestionOpenner({ root = document } = {}) {
+  if (!root) return () => {};
 
-  containers.forEach((container) => {
+  const initContainer = (container) => {
+    if (!(container instanceof HTMLElement)) return;
+    if (container.getAttribute(INIT_MARK_ATTR) === "1") return;
+
     const question = container.querySelector(QUESTION_SELECTOR);
     const answer = container.querySelector(ANSWER_SELECTOR);
     if (!question || !answer) return;
 
-    // ensure default collapsed state
+    container.setAttribute(INIT_MARK_ATTR, "1");
+
+    // default collapsed state
     container.classList.remove("is-open");
     setCollapsed(answer, { immediate: true });
     answer.classList.remove("is-visible", "is-opaque");
     applySpacing(answer, CLOSED_PADDING_VALUE, CLOSED_MARGIN_VALUE);
+
+    // a11y
     question.setAttribute("role", "button");
     question.setAttribute("tabindex", "0");
     question.setAttribute("aria-expanded", "false");
     answer.setAttribute("aria-hidden", "true");
+  };
 
-    const toggle = () => {
-      const isOpen = container.classList.contains("is-open");
-      if (isOpen) {
-        collapse(container, answer, question);
-      } else {
-        expand(container, answer, question);
-      }
-    };
+  const initAllExisting = () => {
+    const containers = root.querySelectorAll?.(CONTAINER_SELECTOR) ?? [];
+    containers.forEach(initContainer);
+  };
 
-    question.addEventListener("click", toggle);
-    question.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        toggle();
+  const toggleFromQuestion = (questionEl) => {
+    const container = questionEl.closest(CONTAINER_SELECTOR);
+    if (!container) return;
+    initContainer(container);
+
+    const answer = container.querySelector(ANSWER_SELECTOR);
+    const question = container.querySelector(QUESTION_SELECTOR);
+    if (!answer || !question) return;
+
+    const isOpen = container.classList.contains("is-open");
+    if (isOpen) collapse(container, answer, question);
+    else expand(container, answer, question);
+  };
+
+  const onClick = (event) => {
+    const target = /** @type {HTMLElement | null} */ (event.target);
+    if (!target) return;
+    const questionEl = target.closest?.(QUESTION_SELECTOR);
+    if (!questionEl) return;
+    toggleFromQuestion(questionEl);
+  };
+
+  const onKeyDown = (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const target = /** @type {HTMLElement | null} */ (event.target);
+    if (!target) return;
+    const questionEl = target.closest?.(QUESTION_SELECTOR);
+    if (!questionEl) return;
+    event.preventDefault();
+    toggleFromQuestion(questionEl);
+  };
+
+  root.addEventListener("click", onClick);
+  root.addEventListener("keydown", onKeyDown);
+
+  initAllExisting();
+
+  let observer = null;
+  if (typeof MutationObserver !== "undefined") {
+    observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (!(node instanceof HTMLElement)) continue;
+          if (node.matches?.(CONTAINER_SELECTOR)) {
+            initContainer(node);
+            continue;
+          }
+          const nested = node.querySelectorAll?.(CONTAINER_SELECTOR);
+          if (nested?.length) nested.forEach(initContainer);
+        }
       }
     });
-  });
+
+    const observeTarget =
+      root instanceof Document ? root.documentElement : root;
+    if (observeTarget) {
+      observer.observe(observeTarget, { childList: true, subtree: true });
+    }
+  }
+
+  return () => {
+    root.removeEventListener("click", onClick);
+    root.removeEventListener("keydown", onKeyDown);
+    observer?.disconnect();
+  };
 }
 
 function expand(container, answer, question) {

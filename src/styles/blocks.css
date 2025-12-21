@@ -415,6 +415,7 @@ p {
   display: flex;
   gap: var(--ll-average-gap);
   align-items: center;
+  justify-content: center;
 }
 
 .ll__why-we-block__right,
@@ -437,10 +438,10 @@ p {
   width: 100%;
   display: flex;
   /* flex-direction: column; */
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
   gap: calc(var(--ll-average-gap) * 1);
-  padding: calc(var(--space) * 3);
+  padding: calc(var(--space) * 4);
   border-radius: var(--radius-max) !important;
 }
 
@@ -488,6 +489,18 @@ p {
 
 .tarif3 {
   margin-left: calc(var(--space) * -2);
+}
+
+.ll__tarifs-block__tarif-p {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ll-average-gap) * 0.8);
+}
+
+.ll__tarifs-block__titles > p {
+  opacity: 60%;
+  font-size: calc(var(--ll-tl-font-size-20) * 0.9);
+  line-height: 110%;
 }
 
 /* ------------------------------------------------ bubbles-block */

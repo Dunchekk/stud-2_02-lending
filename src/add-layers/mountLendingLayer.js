@@ -9,7 +9,6 @@ export function mountLandingLayer({ mountTo, zIndex = 1, attrs = {} } = {}) {
   const el = document.createElement("dunchek-gradient");
   el.className = "c-PixiIntro-gradient";
 
-  // default attrs close to your monopo example
   const defaults = {
     color1: "#0e1c3f",
     color2: "#23418a",
