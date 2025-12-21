@@ -18,7 +18,7 @@ const GRADIENT_THEMES = [
       color1: "#AC619F",
       color2: "#AB4571",
       color3: "#FF7994",
-      color4: "#ff2a54ff",
+      color4: "#ff2a54",
       color5: "#FFA7F0",
       bgcolor: "#49041b",
     },
@@ -29,7 +29,7 @@ const GRADIENT_THEMES = [
     colors: {
       color1: "#8C00FF",
       color2: "#8C00FF",
-      color3: "#8a00b8ff",
+      color3: "#8a00b8",
       color4: "#2e0054",
       color5: "#8C00FF",
       bgcolor: "#010811",
@@ -71,6 +71,7 @@ const FLOATING_EXITING_CLASS = "is-floating-exiting";
 export function createThemeSwapper({
   landingLayer,
   defaultThemeId = GRADIENT_THEMES[2]?.id,
+  transitionDurationMs = 1300,
 } = {}) {
   if (!landingLayer) {
     throw new Error("createThemeSwapper: landingLayer is required");
@@ -78,14 +79,68 @@ export function createThemeSwapper({
 
   const themeMap = new Map(GRADIENT_THEMES.map((theme) => [theme.id, theme]));
   let activeThemeId = defaultThemeId || GRADIENT_THEMES[0].id;
+  let activeColors = null;
+  let hasAppliedOnce = false;
+  let activeAnimationRaf = null;
+
+  const cancelActiveAnimation = () => {
+    if (
+      activeAnimationRaf !== null &&
+      typeof cancelAnimationFrame !== "undefined"
+    ) {
+      cancelAnimationFrame(activeAnimationRaf);
+    }
+    activeAnimationRaf = null;
+  };
 
   const api = {
-    applyTheme(themeId = activeThemeId, overrides = {}) {
+    applyTheme(themeId = activeThemeId, overrides = {}, options = {}) {
       const theme = themeMap.get(themeId) || themeMap.get(activeThemeId);
       const selected = theme || GRADIENT_THEMES[0];
       const sanitized = sanitizeColors(overrides);
-      landingLayer.setAttributes({ ...selected.colors, ...sanitized });
+      const nextColors = { ...selected.colors, ...sanitized };
+
+      const { animate = true, durationMs = transitionDurationMs } = options;
+
+      cancelActiveAnimation();
       activeThemeId = selected.id;
+
+      const canAnimate =
+        typeof requestAnimationFrame === "function" &&
+        typeof performance !== "undefined" &&
+        typeof performance.now === "function";
+
+      if (
+        !animate ||
+        !canAnimate ||
+        !hasAppliedOnce ||
+        !activeColors ||
+        durationMs <= 0
+      ) {
+        landingLayer.setAttributes(nextColors);
+        activeColors = { ...nextColors };
+        hasAppliedOnce = true;
+        return { ...selected };
+      }
+
+      const fromColors = { ...activeColors };
+      const toColors = { ...nextColors };
+
+      activeAnimationRaf = animateColorAttributes({
+        fromColors,
+        toColors,
+        durationMs,
+        onUpdate: (colors) => {
+          activeColors = colors;
+          landingLayer.setAttributes(colors);
+        },
+        onFinish: (finalColors) => {
+          activeAnimationRaf = null;
+          activeColors = finalColors;
+          landingLayer.setAttributes(finalColors);
+        },
+      });
+
       return { ...selected };
     },
     cycleTheme(step = 1) {
@@ -101,7 +156,9 @@ export function createThemeSwapper({
       if (!theme) return null;
       const clean = sanitizeColors(partialColors);
       theme.colors = { ...theme.colors, ...clean };
+      cancelActiveAnimation();
       landingLayer.setAttributes(clean);
+      activeColors = { ...(activeColors || {}), ...clean };
       return { ...theme.colors };
     },
     listThemes() {
@@ -131,7 +188,7 @@ export function createThemeSwapper({
     },
   };
 
-  api.applyTheme(activeThemeId);
+  api.applyTheme(activeThemeId, {}, { animate: false });
 
   return api;
 }
@@ -174,6 +231,85 @@ function getLoopedIndex(index) {
   if (!total) return 0;
   const normalized = ((index % total) + total) % total;
   return normalized;
+}
+
+function animateColorAttributes({
+  fromColors,
+  toColors,
+  durationMs,
+  onUpdate,
+  onFinish,
+} = {}) {
+  const start = performance.now();
+  const keys = Array.from(
+    new Set([...Object.keys(fromColors || {}), ...Object.keys(toColors || {})])
+  );
+
+  const fromRgb = {};
+  const toRgb = {};
+  keys.forEach((key) => {
+    const a = normalizeHex(fromColors?.[key]) || "#000000";
+    const b = normalizeHex(toColors?.[key]) || a;
+    fromRgb[key] = hexToRgb(a);
+    toRgb[key] = hexToRgb(b);
+  });
+
+  const tick = (now) => {
+    const t =
+      durationMs > 0 ? Math.min(1, Math.max(0, (now - start) / durationMs)) : 1;
+    const eased = easeInOutCubic(t);
+
+    const next = {};
+    keys.forEach((key) => {
+      const a = fromRgb[key];
+      const b = toRgb[key];
+      const r = Math.round(lerp(a.r, b.r, eased));
+      const g = Math.round(lerp(a.g, b.g, eased));
+      const bl = Math.round(lerp(a.b, b.b, eased));
+      next[key] = rgbToHex({ r, g, b: bl });
+    });
+
+    onUpdate?.(next);
+
+    if (t >= 1) {
+      onFinish?.(next);
+      return null;
+    }
+
+    return requestAnimationFrame(tick);
+  };
+
+  return requestAnimationFrame(tick);
+}
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+function hexToRgb(hex) {
+  const normalized = normalizeHex(hex) || "#000000";
+  const value = normalized.slice(1);
+  const n = Number.parseInt(value, 16);
+  return {
+    r: (n >> 16) & 255,
+    g: (n >> 8) & 255,
+    b: n & 255,
+  };
+}
+
+function rgbToHex({ r, g, b }) {
+  const rr = clamp255(r).toString(16).padStart(2, "0");
+  const gg = clamp255(g).toString(16).padStart(2, "0");
+  const bb = clamp255(b).toString(16).padStart(2, "0");
+  return `#${rr}${gg}${bb}`.toLowerCase();
+}
+
+function clamp255(n) {
+  return Math.max(0, Math.min(255, Number.isFinite(n) ? n : 0));
 }
 
 function bindThemeToggleButtons({
