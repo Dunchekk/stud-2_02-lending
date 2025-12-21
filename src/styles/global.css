@@ -4,12 +4,43 @@
   /* MEASURES */
 
   --max-width: min(90vw, 1300px);
+  --ll-bleed: max(0px, calc((100vw - var(--max-width)) / 2));
 
   --space: clamp(4px, 0.5vw, 12px);
-  --radius: clamp(8px, 1.5vw, 25px); /* Контейнерные размеры */
+  --radius: clamp(8px, 3vw, 70px); /* Контейнерные размеры */
+  --radius-max: 999px; /* Контейнерные размеры */
   --side-padding: clamp(16px, 4vw, 48px);
+  --ll-average-gap: clamp(10px, 1.38vw, 20px);
+
+  --p-max-width: 45dvh;
 
   --tl-height: min(calc(100dvh - calc(var(--side-padding) * 4)), 90dvh);
+
+  /* TYPO */
+
+  --ll-text-color-white: #ffffff;
+  --ll-text-color-dark: #576473;
+
+  /* 14 @320 → 20 @1200 */
+  --ll-tl-font-size-20: clamp(14px, calc(11.818px + 0.682vw), 20px);
+
+  /* 14 @320 → 24 @1200 */
+  --ll-tl-font-size-24: clamp(14px, calc(10.364px + 1.136vw), 24px);
+
+  /* 14 @320 → 32 @1200 */
+  --ll-tl-font-size-32: clamp(14px, calc(7.455px + 2.045vw), 32px);
+
+  /* 18 @320 → 36 @1200 */
+  --ll-tl-font-size-36: clamp(18px, calc(11.455px + 2.045vw), 36px);
+
+  /* 24 @320 → 40 @1200 */
+  --ll-tl-font-size-40: clamp(24px, calc(18.182px + 1.818vw), 40px);
+
+  /* 24 @320 → 48 @1200 */
+  --ll-tl-font-size-48: clamp(24px, calc(15.273px + 2.727vw), 52px);
+
+  /* 30 @320 → 64 @1200 */
+  --ll-tl-font-size-64: clamp(30px, calc(17.636px + 3.864vw), 75px);
 
   /* COLORS */
 

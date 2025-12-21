@@ -1,0 +1,23 @@
+@media (max-width: 900px) {
+  .ll__stat-block {
+    grid-template-columns: 1fr;
+    gap: calc(var(--ll-average-gap) * 4);
+  }
+
+  .ll__stat-block__donut-wrap {
+    width: clamp(240px, 72vw, 420px);
+  }
+
+  /* подписи — в поток под диаграмму */
+  .ll__stat-block__label {
+    position: static;
+    transform: none !important;
+    max-width: none;
+  }
+
+  .ll__stat-block__donut-center {
+    font-size: var(--ll-tl-font-size-20);
+  }
+
+  /* контейнер для подписей (добавь обёртку, если хочешь аккуратно) */
+}

@@ -1,0 +1,132 @@
+:root {
+  --c-glass: #ffffff;
+  --c-light: #fff;
+  --c-dark: #000;
+
+  --glass-reflex-dark: 1;
+  --glass-reflex-light: 1;
+  --saturation: 200%;
+}
+
+/* БАЗОВОЕ СТЕКЛО */
+.glass {
+  /* управляемость */
+  /* --glass-radius: 18px; */
+  --glass-blur: 10px;
+  --glass-alpha: 35%; /* сколько “стекла” в color-mix */
+  --glass-border: 0.5px;
+  --glass-shadow-dark: 0; /* множители “объёма” */
+  --glass-shadow-light: 1;
+
+  /* border-radius: var(--radius); */
+  border: var(--glass-border) solid
+    color-mix(in srgb, var(--c-light) 22%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--c-glass) var(--glass-alpha),
+    transparent
+  );
+
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--saturation));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--saturation));
+
+  box-shadow:
+    /* светлые рефлексы (верх/лево) */ inset 0 0 0 1px
+      color-mix(
+        in srgb,
+        var(--c-light)
+          calc(var(--glass-reflex-light) * 10% * var(--glass-shadow-light)),
+        transparent
+      ),
+    inset 2px 2.5px 0 -2px color-mix(in srgb, var(--c-light)
+          calc(var(--glass-reflex-light) * 90% * var(--glass-shadow-light)), transparent),
+    inset -2px -2px 0 -2px color-mix(in srgb, var(--c-light)
+          calc(var(--glass-reflex-light) * 75% * var(--glass-shadow-light)), transparent),
+    inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light)
+          calc(var(--glass-reflex-light) * 55% * var(--glass-shadow-light)), transparent),
+    /* тёмные рефлексы (низ/право) */ inset -0.3px -1px 4px 0
+      color-mix(
+        in srgb,
+        var(--c-dark)
+          calc(var(--glass-reflex-dark) * 12% * var(--glass-shadow-dark)),
+        transparent
+      ),
+    inset -1.5px 2.5px 0 -2px
+      color-mix(
+        in srgb,
+        var(--c-dark)
+          calc(var(--glass-reflex-dark) * 20% * var(--glass-shadow-dark)),
+        transparent
+      ),
+    inset 0 3px 4px -2px color-mix(in srgb, var(--c-dark)
+          calc(var(--glass-reflex-dark) * 18% * var(--glass-shadow-dark)), transparent),
+    inset 2px -6.5px 1px -4px
+      color-mix(
+        in srgb,
+        var(--c-dark)
+          calc(var(--glass-reflex-dark) * 10% * var(--glass-shadow-dark)),
+        transparent
+      ),
+    /* внешняя тень */ 0 1px 5px 0
+      color-mix(
+        in srgb,
+        var(--c-dark) calc(var(--glass-reflex-dark) * 10%),
+        transparent
+      ),
+    0 10px 24px 0
+      color-mix(
+        in srgb,
+        var(--c-dark) calc(var(--glass-reflex-dark) * 8%),
+        transparent
+      );
+}
+
+/* ДОБАВКА “LIQUID” (опционально, где поддерживается url() в backdrop-filter) */
+@supports (backdrop-filter: url(#glass-liquid)) {
+  .glass.is-liquid {
+    backdrop-filter: blur(var(--glass-blur)) url(#glass-liquid)
+      saturate(var(--saturation));
+  }
+}
+
+/* МОДИФИКАТОРЫ */
+.glass--pill {
+  --glass-radius: 999px;
+  /* --glass-alpha: 1%; */
+}
+.glass--soft {
+  --glass-blur: 0px;
+  --glass-alpha: 20%;
+  border-radius: var(--radius);
+}
+.glass--strong {
+  --glass-blur: 16px;
+  --glass-alpha: 30%;
+  border-radius: var(--radius);
+}
+
+/* .glass--strong--strong {
+  --glass-blur: 16px;
+  --glass-alpha: 80%;
+  border-radius: var(--radius);
+} */
+
+/* базовый hover для кнопок */
+button.glass,
+.glass.buttonlike {
+  cursor: pointer;
+  transition: transform 1s ease, background-color 1s ease, box-shadow 1s ease;
+}
+button.glass:hover,
+.glass.buttonlike:hover {
+  transform: translateY(0px);
+  background-color: color-mix(
+    in srgb,
+    var(--c-glass) calc(var(--glass-alpha) + 15%),
+    transparent
+  );
+}
+button.glass:active,
+.glass.buttonlike:active {
+  transform: translateY(2px);
+}

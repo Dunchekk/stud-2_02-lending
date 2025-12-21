@@ -2,13 +2,13 @@
 import * as PIXI from "pixi.js";
 
 /**
- * Define <monopo-gradient> custom element.
+ * Define <dunchek-gradient> custom element.
  * Uses PixiJS 6.2.0.
  */
-export function defineMonopoGradientElement() {
-  if (customElements.get("monopo-gradient")) return;
+export function defineDunchekGradientElement() {
+  if (customElements.get("dunchek-gradient")) return;
 
-  class MonopoGradientElement extends HTMLElement {
+  class DunchekGradientElement extends HTMLElement {
     static get observedAttributes() {
       return [
         "color1",
@@ -19,6 +19,7 @@ export function defineMonopoGradientElement() {
         "seed",
         "displacement",
         "noretina",
+        "bgcolor",
       ];
     }
 
@@ -36,9 +37,8 @@ export function defineMonopoGradientElement() {
 
       /** @type {PIXI.filters.DisplacementFilter | null} */
       this._dispFilter = null;
-
-      this._raf = 0;
-      this._lastSeed = null;
+      this._scene = null;
+      this._hud = null;
 
       // canvases for texture generation
       this._gradCanvas = document.createElement("canvas");
@@ -61,15 +61,14 @@ export function defineMonopoGradientElement() {
 
         // X -> displacement target [0..5]
         this._dispTarget = 0.8 + nx * 4.2; // 1..5
+
+        this._dispNy = ny;
       };
 
       this._onResize = () => {
         this._layoutToScreen();
+        this._layoutOverlayToScreen();
       };
-
-      this._pendingSeed = null;
-      this._pendingDisp = null;
-      this._tickScheduled = false;
 
       this._dispCurrent = 0;
       this._dispTarget = 0;
@@ -78,12 +77,30 @@ export function defineMonopoGradientElement() {
       this._seedTarget = this._seedCurrent;
 
       this._lastRebuildAt = 0;
-      this._rebuildIntervalMs = 40; // 25 FPS пересборки максимум (можно 50..80)
+      this._rebuildIntervalMs = 30; // ~14 FPS rebuild cap; raise for less CPU
 
       this._maskCanvas = document.createElement("canvas");
       this._maskCanvas.width = 512;
       this._maskCanvas.height = 512;
       this._maskSprite = null;
+
+      this._overlayCanvas = document.createElement("canvas");
+      this._overlayCanvas.width = 512;
+      this._overlayCanvas.height = 512;
+      this._overlaySprite = null;
+
+      // --- displacement Y shift (safe) ---
+      this._dispShiftY = 0;
+      this._dispShiftYTarget = 0;
+      this._dispShiftSmooth = 0.07;
+      this._dispNy = 0.5;
+      this._dispOverscanY = 3.5;
+      this._dispShiftMax = 0;
+      this._dispShiftAmount = 0.8;
+      this._dispBaseX = 0;
+      this._dispBaseY = 0;
+      this._dispTextureMaxSize = 2000;
+      this._bgColorHex = this._readColorAttr("bgcolor", "#000000");
     }
 
     connectedCallback() {
@@ -110,9 +127,14 @@ export function defineMonopoGradientElement() {
 
       this.appendChild(this._app.view);
 
+      this._scene = new PIXI.Container();
+      this._hud = new PIXI.Container();
+      this._app.stage.addChild(this._scene);
+      this._app.stage.addChild(this._hud);
+
       // фон СРАЗУ, и добавляем первым
       this._bg = new PIXI.Graphics();
-      this._bg.beginFill(0x000000, 1);
+      this._bg.beginFill(this._bgColorHex, 1);
       this._bg.drawRect(
         0,
         0,
@@ -120,7 +142,7 @@ export function defineMonopoGradientElement() {
         this._app.renderer.height
       );
       this._bg.endFill();
-      this._app.stage.addChild(this._bg);
+      this._scene.addChild(this._bg);
 
       const seed = this._readNumberAttr("seed", 0);
       const disp = this._readNumberAttr("displacement", 0);
@@ -139,13 +161,16 @@ export function defineMonopoGradientElement() {
       this._setDisplacementStrength(disp);
       this._gradientSprite.filters = [this._dispFilter];
 
-      this._app.stage.addChild(this._gradientSprite);
-      this._app.stage.addChild(this._dispSprite);
-
-      // this._edge = new PIXI.Graphics();
-      // this._app.stage.addChild(this._edge);
+      this._scene.addChild(this._gradientSprite);
+      this._scene.addChild(this._dispSprite);
 
       this._buildEdgeMask();
+
+      this._buildOverlayTexture();
+      this._overlaySprite.alpha = 0.18;
+      this._overlaySprite.blendMode = PIXI.BLEND_MODES.NORMAL;
+      this._hud.addChild(this._overlaySprite);
+      this._layoutOverlayToScreen();
 
       // ВАЖНО: убираем “плыть” displacement (никаких x/y += ...)
       // Вместо этого — лёгкий ticker только для сглаживания силы
@@ -155,6 +180,23 @@ export function defineMonopoGradientElement() {
         this._dispCurrent +=
           (this._dispTarget - this._dispCurrent) * dispSmoothing;
         this._setDisplacementStrength(this._dispCurrent);
+
+        if (this._dispSprite) {
+          const ySigned = (this._dispNy - 0.5) * 2;
+          this._dispShiftYTarget =
+            ySigned * this._dispShiftMax * this._dispShiftAmount;
+
+          this._dispShiftY +=
+            (this._dispShiftYTarget - this._dispShiftY) * this._dispShiftSmooth;
+
+          const clampedShift = Math.max(
+            -this._dispShiftMax,
+            Math.min(this._dispShiftMax, this._dispShiftY)
+          );
+
+          this._dispSprite.x = this._dispBaseX;
+          this._dispSprite.y = this._dispBaseY + clampedShift;
+        }
 
         // seed smoothing: справа (nx→1) делаем плавнее
         const nx = Math.max(0, Math.min(1, this._dispTarget / 5)); // т.к. dispTarget = nx*5
@@ -183,13 +225,12 @@ export function defineMonopoGradientElement() {
       window.addEventListener("resize", this._onResize, { passive: true });
 
       this._layoutToScreen();
+      this._layoutOverlayToScreen();
     }
 
     disconnectedCallback() {
       window.removeEventListener("pointermove", this._onPointerMove);
       window.removeEventListener("resize", this._onResize);
-
-      if (this._raf) cancelAnimationFrame(this._raf);
 
       if (this._app) {
         // destroy(true) also removes children textures etc; be conservative
@@ -204,6 +245,8 @@ export function defineMonopoGradientElement() {
       this._gradientSprite = null;
       this._dispSprite = null;
       this._dispFilter = null;
+      this._scene = null;
+      this._hud = null;
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -222,6 +265,12 @@ export function defineMonopoGradientElement() {
         // он лишь задаёт цель для плавного догоняния в ticker
         this._seedTarget = seed;
 
+        return;
+      }
+
+      if (name === "bgcolor") {
+        this._bgColorHex = this._readColorAttr("bgcolor", "#000000");
+        this._layoutToScreen();
         return;
       }
 
@@ -260,6 +309,7 @@ export function defineMonopoGradientElement() {
       this._dispTarget = 0.8 + nx * 4.2; // 1..5
 
       // важно: НЕ setAttribute("seed")
+      this._dispNy = ny;
     }
 
     _layoutToScreen() {
@@ -285,15 +335,21 @@ export function defineMonopoGradientElement() {
         const dH = this._dispSprite.texture.height || 1;
 
         const dScaleX = w / dW;
-        const dScaleY = h / dH;
+        const dScaleY = (h * this._dispOverscanY) / dH;
 
         this._dispSprite.scale.set(dScaleX, dScaleY);
-        this._dispSprite.position.set(0, 0);
+
+        const scaledH = dH * dScaleY;
+        const extra = Math.max(0, scaledH - h);
+
+        this._dispBaseX = 0;
+        this._dispBaseY = -extra / 2;
+        this._dispShiftMax = extra / 2;
       }
 
       if (this._bg) {
         this._bg.clear();
-        this._bg.beginFill(0x000000, 1);
+        this._bg.beginFill(this._bgColorHex, 1);
         this._bg.drawRect(0, 0, w, h);
         this._bg.endFill();
       }
@@ -310,16 +366,14 @@ export function defineMonopoGradientElement() {
       }
     }
 
-    _rebuildForSeed(seed) {
-      // Avoid rebuilding too often if pointer jitters
-      if (this._lastSeed !== null && Math.abs(seed - this._lastSeed) < 0.01)
-        return;
-      this._lastSeed = seed;
-
-      // Rebuild gradient and noise map for this seed
-      this._buildGradient(seed, { replaceTexture: true });
-      this._buildDisplacement(seed, { replaceTexture: true });
-      this._layoutToScreen();
+    _layoutOverlayToScreen() {
+      if (!this._app || !this._overlaySprite) return;
+      const w = this._app.renderer.width;
+      const h = this._app.renderer.height;
+      this._overlaySprite.position.set(0, 0);
+      this._overlaySprite.width = w;
+      this._overlaySprite.height = h;
+      this._overlaySprite.roundPixels = true;
     }
 
     _setDisplacementStrength(displacement_0_5) {
@@ -331,7 +385,7 @@ export function defineMonopoGradientElement() {
       const shaped = Math.pow(d, 1.01);
 
       const maxX = 1800;
-      const maxY = 1300;
+      const maxY = 500;
 
       this._dispFilter.scale.set(shaped * maxX, shaped * maxY);
     }
@@ -343,11 +397,11 @@ export function defineMonopoGradientElement() {
     _buildGradient(seed, opts = {}) {
       if (!this._app) return;
 
-      const c1 = this.getAttribute("color1") || "#0e1c3fff";
+      const c1 = this.getAttribute("color1") || "#0e1c3f";
       const c2 = this.getAttribute("color2") || "#23418a";
       const c3 = this.getAttribute("color3") || "#aadfd9";
       const c4 = this.getAttribute("color4") || "#e64f0f";
-      const c5 = this.getAttribute("color5") || "#000000ff";
+      const c5 = this.getAttribute("color5") || "#000000";
 
       const ctx = this._gradCanvas.getContext("2d", {
         willReadFrequently: false,
@@ -413,9 +467,7 @@ export function defineMonopoGradientElement() {
       ctx.clearRect(0, 0, W, H);
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
-
-      // зерно оставляем
-      addGrain(ctx, W, H, seededRng(1000 + Math.floor((seed + 1) * 10000)));
+      // grain вынесен в overlay (статичный), чтобы не "дрожал" при повороте/пересборке
 
       // ВАЖНО: в Pixi 6 canvas-текстуру нужно обновлять через baseTexture.update()
       if (!this._gradientSprite) {
@@ -442,8 +494,8 @@ export function defineMonopoGradientElement() {
         H / 2,
         W * 0.58
       );
-      g.addColorStop(0.0, "rgba(255,255,255,1)");
-      g.addColorStop(0.72, "rgba(255,255,255,1)");
+      g.addColorStop(0.0, "rgba(255,255,255,1)"); //-------------------------------
+      g.addColorStop(0.5, "rgba(255,255,255,1)");
       g.addColorStop(1.0, "rgba(255,255,255,0)");
 
       ctx.clearRect(0, 0, W, H);
@@ -457,9 +509,36 @@ export function defineMonopoGradientElement() {
         this._maskSprite.anchor.set(0, 0);
 
         this._gradientSprite.mask = this._maskSprite;
-        this._app.stage.addChild(this._maskSprite);
+        if (this._scene) {
+          this._scene.addChild(this._maskSprite);
+        } else {
+          this._app.stage.addChild(this._maskSprite);
+        }
       } else {
         this._maskSprite.texture.baseTexture.update();
+      }
+    }
+
+    _buildOverlayTexture() {
+      const c = this._overlayCanvas;
+      const ctx = c.getContext("2d", { willReadFrequently: true });
+      const W = c.width;
+      const H = c.height;
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = "rgba(255,255,255,0.01)";
+      ctx.fillRect(0, 0, W, H);
+      addGrain(ctx, W, H, seededRng(1337));
+
+      if (!this._overlaySprite) {
+        const base = PIXI.BaseTexture.from(c);
+        base.wrapMode = PIXI.WRAP_MODES.CLAMP;
+        base.scaleMode = PIXI.SCALE_MODES.LINEAR;
+        const tex = new PIXI.Texture(base);
+        this._overlaySprite = new PIXI.Sprite(tex);
+        this._overlaySprite.anchor.set(0, 0);
+      } else {
+        this._overlaySprite.texture.baseTexture.update();
       }
     }
 
@@ -470,7 +549,7 @@ export function defineMonopoGradientElement() {
       const rw = this._app.renderer.width;
       const rh = this._app.renderer.height;
 
-      const maxSize = 2000; // компромисс: достаточно детально и не убивает CPU
+      const maxSize = this._dispTextureMaxSize || 1400;
       const scale = Math.min(1, maxSize / Math.max(rw, rh));
 
       const W = Math.max(256, Math.floor(rw * scale));
@@ -551,9 +630,33 @@ export function defineMonopoGradientElement() {
       const v = Number(this.getAttribute(name));
       return Number.isFinite(v) ? v : fallback;
     }
+
+    _readColorAttr(name, fallback) {
+      const attr = this.getAttribute(name);
+      const fallbackColor = typeof fallback === "string" ? fallback : "#000000";
+      const candidate =
+        typeof attr === "string" && attr.trim().length > 0
+          ? attr.trim()
+          : fallbackColor;
+      return this._parseHexColor(candidate, fallbackColor);
+    }
+
+    _parseHexColor(value, fallback) {
+      const base = typeof fallback === "string" ? fallback : "#000000";
+      const normalized = typeof value === "string" ? value : base;
+      try {
+        return PIXI.utils.string2hex(normalized);
+      } catch (err) {
+        try {
+          return PIXI.utils.string2hex(base);
+        } catch {
+          return 0x000000;
+        }
+      }
+    }
   }
 
-  customElements.define("monopo-gradient", MonopoGradientElement);
+  customElements.define("dunchek-gradient", DunchekGradientElement);
 }
 
 // ---------- util functions ----------

@@ -5,25 +5,21 @@ import "./styles/layers.css";
 import "./styles/blocks.css";
 import "./styles/cursor.css";
 import "./styles/manifesto.css";
+import "./styles/glass.css";
+import "./styles/adaptiveStat.css";
 
 import { mountLandingLayer } from "./add-layers/mountLendingLayer.js";
-
+import { createThemeSwapper } from "./app/themeSwapper.js";
 import { mountTextLayer } from "./add-layers/mountTextLayer.js";
 import textData from "./data/textLayer.json";
+import { initQuestionOpenner } from "./app/questionOpenner.js";
 
 const app = document.getElementById("app");
 
-// 0) pixi gradient background
-mountLandingLayer({
+const landingLayer = mountLandingLayer({
   mountTo: app,
   zIndex: 1,
   attrs: {
-    // можешь тут менять тему
-    color1: "#0e1c3fff",
-    color2: "#23418a",
-    color3: "#aadfd9",
-    color4: "#e64f0f",
-    color5: "#000000ff",
     noretina: "true",
   },
 });
@@ -34,3 +30,8 @@ mountTextLayer({
   data: textData,
   zIndex: 0,
 });
+
+const themeSwapper = createThemeSwapper({ landingLayer });
+themeSwapper.bindToggleButtons();
+themeSwapper.exposeThemeApi();
+initQuestionOpenner();

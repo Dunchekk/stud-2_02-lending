@@ -1,21 +1,22 @@
 // src/add-layers/mountLanding.js
-import { defineMonopoGradientElement } from "../pixi/initPixi.js";
+import { defineDunchekGradientElement } from "../pixi/initPixi.js";
 
-export function mountLandingLayer({ mountTo, zIndex = 0, attrs = {} } = {}) {
+export function mountLandingLayer({ mountTo, zIndex = 1, attrs = {} } = {}) {
   if (!mountTo) throw new Error("mountLandingLayer: mountTo is required");
 
-  defineMonopoGradientElement();
+  defineDunchekGradientElement();
 
-  const el = document.createElement("monopo-gradient");
+  const el = document.createElement("dunchek-gradient");
   el.className = "c-PixiIntro-gradient";
 
   // default attrs close to your monopo example
   const defaults = {
-    color1: "#0e1c3fff",
+    color1: "#0e1c3f",
     color2: "#23418a",
     color3: "#aadfd9",
     color4: "#e64f0f",
-    color5: "#000000ff",
+    color5: "#000000",
+    bgcolor: "#050505",
     displacement: "0",
     seed: "0",
     noretina: "true",
@@ -30,10 +31,18 @@ export function mountLandingLayer({ mountTo, zIndex = 0, attrs = {} } = {}) {
 
   mountTo.appendChild(el);
 
-  return {
+  const api = {
     el,
+    setAttributes(nextAttrs = {}) {
+      Object.entries(nextAttrs).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+        el.setAttribute(key, String(value));
+      });
+    },
     destroy() {
       el.remove();
     },
   };
+
+  return api;
 }
