@@ -568,3 +568,115 @@ tl\_\_jump — класс, который можно повесить на эл�
       </div>
 
     </div>
+
+---
+
+## DOM после загрузки (новая архитектура)
+
+`#feed` создаётся в `src/main.js` функцией `ensureFeed(app)` и монтируется ВНУТРЬ `div#app`. Все секции лендинга из `renderers/*` попадают именно в `main#feed.ll__feed` (через `mountSections(feed, page.sections)`), а дальше `infiniteLoader` может добавлять/удалять секции внутри `#feed` при скролле.
+
+Ниже — примерная HTML-структура “как в браузере” после инициализации (без подробностей внутри каждой секции):
+
+```html
+<html data-tl-theme="...">
+  <body data-tl-theme="...">
+    <div id="app">
+      <!-- фон-градиент (Pixi) -->
+      <dunchek-gradient class="c-PixiIntro-gradient" style="z-index: 1">
+        <canvas></canvas>
+      </dunchek-gradient>
+
+      <!-- текстовый слой -->
+      <section class="tl" style="z-index: 0" aria-label="Text layer">
+        <aside class="tl__left">
+          <nav class="tl__toc"></nav>
+          <div class="tl__themes"></div>
+        </aside>
+        <main class="tl__right">
+          <div class="tl__content"></div>
+          <div class="tl__pager"></div>
+        </main>
+      </section>
+
+      <!-- контейнер секций лендинга (рендереры монтируются сюда) -->
+      <main id="feed" class="ll__feed">
+        <!-- 1) hero-block -->
+        <div
+          class="ll__hero-block ll__container"
+          data-hero-section
+          data-section-type="hero-block"
+        >
+          <!-- ... -->
+          <!-- кнопка ~ внутри hero -->
+          <button data-theme-toggle type="button">~</button>
+        </div>
+
+        <!-- 2) остальные блоки из page.json -->
+        <div
+          class="ll__what-is-it-block ll__container"
+          data-section-type="what-is-it-block"
+        ></div>
+        <div
+          class="ll__break-block ll__container"
+          data-section-type="break-block"
+        ></div>
+        <div
+          class="ll__big-blur-content-block ll__container"
+          data-section-type="big-blur-content-block"
+        ></div>
+        <div
+          class="ll__three-filled-elements-block ll__container"
+          data-section-type="three-filled-elements-block"
+        ></div>
+        <div
+          class="ll__why-we-block ll__container"
+          data-section-type="why-we-block"
+        ></div>
+        <div
+          class="ll__tarifs-block ll__container"
+          data-section-type="tarifs-block"
+        ></div>
+        <div
+          class="ll__bubbles-block ll__container"
+          data-section-type="bubbles-block"
+        ></div>
+        <div
+          class="ll__faq-block ll__container"
+          data-section-type="faq-block"
+        ></div>
+        <div
+          class="ll__prog-block ll__container"
+          data-section-type="prog-block"
+        ></div>
+        <div
+          class="ll__stat-block ll__container"
+          data-section-type="stat-block"
+        ></div>
+      </main>
+    </div>
+
+    <!-- fixed кнопка ~ (вне #app, монтируется прямо в body) -->
+    <button
+      class="ll__filled-button glass glass--pill is-liquid ll__theme-toggle-button ll__theme-toggle--floating"
+      data-theme-toggle
+      type="button"
+    >
+      ~
+    </button>
+
+    <!-- svg-filter стекла из index.html -->
+    <svg width="0" height="0" style="position: absolute">
+      <filter id="glass-liquid">...</filter>
+    </svg>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+```
+
+      color1: "#8C00FF",
+      color2: "#8C00FF",
+      color3: "#8a00b8",
+      color4: "#2e0054",
+      color5: "#8C00FF",
+      bgcolor: "#010811",

@@ -1,1 +1,67 @@
 /*  */
+/* === Go Touch Grass layer === */
+
+.gtg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999; /* слой поверх всего */
+  pointer-events: none; /* чтобы слой не блокировал интерфейс */
+  overflow: hidden;
+}
+
+.gtg-item {
+  position: absolute;
+
+  /* Старт: верхняя грань картинки совпадает с нижней гранью экрана */
+  top: 100vh;
+
+  /* X выставляем инлайном через left: ...% */
+  transform: translateX(-50%) translateY(0);
+
+  width: min(var(--gtg-w, 30vw), 30vw);
+  will-change: transform, opacity;
+
+  /* движение вверх */
+  animation: gtg-float-up var(--gtg-float-ms, 26000ms) linear forwards;
+
+  /* кликабельность возвращаем только на элемент */
+  pointer-events: auto;
+
+  /* плавность для hover/клика */
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+
+.gtg-img {
+  display: block;
+  width: 100%;
+  height: auto;
+
+  cursor: pointer;
+
+  /* запрет перетаскивания */
+  -webkit-user-drag: none;
+  user-select: none;
+
+  /* легкая читаемость, если фон сложный */
+  /* filter: drop-shadow(0 10px 30px rgba(0,0,0,0.22)); */
+}
+
+.gtg-item:hover {
+  transform: translateX(-50%) translateY(0) scale(1.08);
+}
+
+.gtg-item.is-dismissed {
+  opacity: 0;
+  transform: translateX(-50%) translateY(0) scale(0.92);
+}
+
+/* Долетает вверх и уходит полностью за верхнюю грань.
+   -140vh: гарантированно перекрывает высоту картинки даже при больших экранах */
+@keyframes gtg-float-up {
+  from {
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    transform: translateX(-50%) translateY(-140vh);
+  }
+}

@@ -1,1 +1,49 @@
 /* (красный квадратный курсор, режимы) */
+
+.pop-timer {
+  position: fixed;
+  left: 25vw;
+  top: 50vh;
+  transform: translate(-50%, -50%);
+  z-index: 999999;
+  font-size: var(--ll-tl-font-size-20);
+  color: var(--tl-color-red);
+  font-family: "IBM Plex mono";
+}
+
+:root {
+  --erase-cursor-size: 0.8vw;
+  --erase-cursor-color: #ff2a2a;
+  --erase-transition: 420ms;
+}
+
+body.is-erase-mode {
+  cursor: none !important;
+}
+
+body.is-erase-mode .cursor,
+body.is-erase-mode .custom-cursor,
+body.is-erase-mode [data-cursor] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+.erase-cursor {
+  position: fixed;
+  width: var(--erase-cursor-size);
+  height: var(--erase-cursor-size);
+  background: var(--erase-cursor-color);
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  z-index: 999999;
+  pointer-events: none;
+}
+
+.fade-texts-target,
+.fade-landing-target {
+  transition: opacity var(--erase-transition) ease;
+  will-change: opacity;
+}
+
+/* ниже раньше был продублированный блок правил, который перетирал --erase-cursor-size */

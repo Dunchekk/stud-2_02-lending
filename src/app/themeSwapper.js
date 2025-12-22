@@ -3,24 +3,36 @@ const GRADIENT_THEMES = [
     id: "aurora",
     label: "Aurora",
     colors: {
-      color1: "#0e1c3f",
-      color2: "#23418a",
-      color3: "#aadfd9",
-      color4: "#e64f0f",
+      color1: "#5e4329ff",
+      color2: "#48331fff",
+      color3: "#6e4a29ff",
+      color4: "#875046ff",
+      color5: "#352a20ff",
+      bgcolor: "#352a20",
+    },
+  },
+  {
+    id: "ember1",
+    label: "Ember",
+    colors: {
+      color1: "#000000",
+      color2: "#1d1628",
+      color3: "#000000",
+      color4: "#472d74",
       color5: "#000000",
-      bgcolor: "#050505",
+      bgcolor: "#000000",
     },
   },
   {
     id: "ember",
     label: "Ember",
     colors: {
-      color1: "#AC619F",
-      color2: "#AB4571",
-      color3: "#FF7994",
-      color4: "#ff2a54",
-      color5: "#FFA7F0",
-      bgcolor: "#49041b",
+      color1: "#55283d",
+      color2: "#55283d",
+      color3: "#ac527e",
+      color4: "#f05c5e",
+      color5: "#6e3550",
+      bgcolor: "#6e3550",
     },
   },
   {
@@ -36,27 +48,65 @@ const GRADIENT_THEMES = [
     },
   },
   {
+    id: "lagoon3",
+    label: "Lagoon",
+    colors: {
+      color1: "#21618f",
+      color2: "#3a6686",
+      color3: "#85bddd",
+      color4: "#5eaad6",
+      color5: "#2e6e9d",
+      bgcolor: "#42637c",
+    },
+  },
+  {
     id: "lagoon2",
     label: "Lagoon",
     colors: {
-      color1: "#3700FF",
-      color2: "#4100D9",
-      color3: "#00AEFF",
-      color4: "#3700FF",
-      color5: "#0B1865",
-      bgcolor: "#010811",
+      color1: "#3c3d3a",
+      color2: "#464444",
+      color3: "#717171",
+      color4: "#a49968",
+      color5: "#2f2f2f",
+      bgcolor: "#23221b",
+    },
+  },
+];
+
+const TEXT_THEMES = [
+  {
+    id: "aurora",
+    label: "Aurora",
+    colors: {
+      color5: "#220027",
+    },
+  },
+  {
+    id: "ember",
+    label: "Ember",
+    colors: {
+      color5: "#004355",
+    },
+  },
+  {
+    id: "lagoon",
+    label: "Lagoon",
+    colors: {
+      color5: "#000d57",
+    },
+  },
+  {
+    id: "lagoon2",
+    label: "Lagoon",
+    colors: {
+      color5: "#00290c",
     },
   },
   {
     id: "lagoon3",
     label: "Lagoon",
     colors: {
-      color1: "#FDFF79",
-      color2: "#FDFF79",
-      color3: "#FF8000",
-      color4: "#FF8000",
-      color5: "#FDFF79",
-      bgcolor: "#a83b00",
+      color5: "#296a99",
     },
   },
 ];
@@ -67,10 +117,11 @@ const FLOATING_TOGGLE_CLASS = "ll__theme-toggle--floating";
 const FLOATING_VISIBLE_CLASS = "is-visible";
 const FLOATING_SHOWN_CLASS = "is-floating-shown";
 const FLOATING_EXITING_CLASS = "is-floating-exiting";
+const DARK_TEXT_CSS_VAR = "--ll-text-color-dark";
 
 export function createThemeSwapper({
   landingLayer,
-  defaultThemeId = GRADIENT_THEMES[2]?.id,
+  defaultThemeId = GRADIENT_THEMES[0]?.id,
   transitionDurationMs = 1300,
 } = {}) {
   if (!landingLayer) {
@@ -78,10 +129,17 @@ export function createThemeSwapper({
   }
 
   const themeMap = new Map(GRADIENT_THEMES.map((theme) => [theme.id, theme]));
+  const textThemeMap = new Map(TEXT_THEMES.map((theme) => [theme.id, theme]));
   let activeThemeId = defaultThemeId || GRADIENT_THEMES[0].id;
   let activeColors = null;
   let hasAppliedOnce = false;
   let activeAnimationRaf = null;
+  let activeTextColor = null;
+
+  const canAnimate =
+    typeof requestAnimationFrame === "function" &&
+    typeof performance !== "undefined" &&
+    typeof performance.now === "function";
 
   const cancelActiveAnimation = () => {
     if (
@@ -91,6 +149,39 @@ export function createThemeSwapper({
       cancelAnimationFrame(activeAnimationRaf);
     }
     activeAnimationRaf = null;
+  };
+
+  const applyTextColor = (themeId, { animate = true, durationMs } = {}) => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    if (!root) return;
+
+    const textTheme = textThemeMap.get(themeId);
+    const target = normalizeHex(textTheme?.colors?.color5);
+    if (!target) return;
+
+    const inlineValue = normalizeHex(
+      root.style.getPropertyValue(DARK_TEXT_CSS_VAR).trim()
+    );
+    const computedValue =
+      typeof window !== "undefined" &&
+      typeof window.getComputedStyle === "function"
+        ? normalizeHex(
+            window
+              .getComputedStyle(root)
+              .getPropertyValue(DARK_TEXT_CSS_VAR)
+              .trim()
+          )
+        : null;
+
+    const from = activeTextColor || inlineValue || computedValue || target;
+    // Важно: всегда задаём значение. Плавность делаем CSS-ом через @property/transition.
+    // (JS-анимация переменной оказалась нестабильной в связке с динамическим DOM.)
+    void animate;
+    void durationMs;
+    void from;
+    root.style.setProperty(DARK_TEXT_CSS_VAR, target);
+    activeTextColor = target;
   };
 
   const api = {
@@ -105,10 +196,7 @@ export function createThemeSwapper({
       cancelActiveAnimation();
       activeThemeId = selected.id;
 
-      const canAnimate =
-        typeof requestAnimationFrame === "function" &&
-        typeof performance !== "undefined" &&
-        typeof performance.now === "function";
+      applyTextColor(activeThemeId, { animate, durationMs });
 
       if (
         !animate ||
@@ -322,24 +410,13 @@ function bindThemeToggleButtons({
   exitingClass = FLOATING_EXITING_CLASS,
 } = {}) {
   if (typeof document === "undefined") return () => {};
-  const buttons = Array.from(document.querySelectorAll(toggleSelector));
-  if (!buttons.length) return () => {};
-
-  const handleClick = (event) => {
-    event.preventDefault();
-    api.cycleTheme();
-  };
-
-  buttons.forEach((button) => {
-    button.addEventListener("click", handleClick);
-  });
-
-  const floatingButtons = buttons.filter((button) =>
-    button.classList.contains(floatingClass)
-  );
-  let observerCleanup = null;
+  const getFloatingButtons = () =>
+    Array.from(document.querySelectorAll(toggleSelector)).filter((button) =>
+      button.classList.contains(floatingClass)
+    );
 
   const updateFloatingVisibility = (heroGone) => {
+    const floatingButtons = getFloatingButtons();
     floatingButtons.forEach((button) => {
       if (heroGone) {
         showFloatingButton(button, {
@@ -357,32 +434,87 @@ function bindThemeToggleButtons({
     });
   };
 
-  if (floatingButtons.length && typeof window !== "undefined") {
+  const handleClick = (event) => {
+    const target = /** @type {HTMLElement | null} */ (event.target);
+    if (!target) return;
+    const toggle = target.closest?.(toggleSelector);
+    if (!toggle) return;
+    event.preventDefault();
+    api.cycleTheme();
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const target = /** @type {HTMLElement | null} */ (event.target);
+    if (!target) return;
+    const toggle = target.closest?.(toggleSelector);
+    if (!toggle) return;
+    event.preventDefault();
+    api.cycleTheme();
+  };
+
+  document.addEventListener("click", handleClick);
+  document.addEventListener("keydown", handleKeyDown);
+
+  let observer = null;
+  let observedHero = null;
+  const cleanupHeroObserver = () => {
+    if (observer) observer.disconnect();
+    observer = null;
+    observedHero = null;
+  };
+
+  const ensureHeroObserver = () => {
+    if (typeof window === "undefined") return;
+    if (!("IntersectionObserver" in window)) return;
+
     const heroSection = document.querySelector(heroSelector);
-    if (heroSection && "IntersectionObserver" in window) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            const heroGone = entry.intersectionRatio === 0;
-            updateFloatingVisibility(heroGone);
-          });
-        },
-        {
-          threshold: 0,
-        }
-      );
-      observer.observe(heroSection);
-      observerCleanup = () => observer.disconnect();
-    } else {
-      updateFloatingVisibility(true);
-    }
+    if (!heroSection) return;
+    if (heroSection === observedHero) return;
+
+    cleanupHeroObserver();
+
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const heroGone = !entry.isIntersecting;
+          updateFloatingVisibility(heroGone);
+        });
+      },
+      { threshold: 0 }
+    );
+
+    observer.observe(heroSection);
+    observedHero = heroSection;
+  };
+
+  // initial state: if hero not found yet, keep floating hidden until it appears
+  updateFloatingVisibility(false);
+  ensureHeroObserver();
+
+  let mutationObserver = null;
+  if (typeof MutationObserver !== "undefined") {
+    mutationObserver = new MutationObserver(() => {
+      // hero and/or buttons might have been mounted dynamically
+      ensureHeroObserver();
+
+      // if hero is gone from DOM (shouldn't, but can happen), fall back to shown
+      if (observedHero && !document.contains(observedHero)) {
+        cleanupHeroObserver();
+        updateFloatingVisibility(true);
+      }
+    });
+    mutationObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
   }
 
   return () => {
-    buttons.forEach((button) => {
-      button.removeEventListener("click", handleClick);
-    });
-    if (typeof observerCleanup === "function") observerCleanup();
+    document.removeEventListener("click", handleClick);
+    document.removeEventListener("keydown", handleKeyDown);
+    mutationObserver?.disconnect();
+    cleanupHeroObserver();
   };
 }
 

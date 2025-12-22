@@ -8,7 +8,7 @@
   z-index: 1;
 
   /* важно: чтобы клики проходили сквозь градиент */
-  pointer-events: none;
+  /* pointer-events: none; */
 }
 
 /* ------------------------------------------------------ MAIN */
@@ -24,6 +24,10 @@
   font-weight: 300;
   line-height: 130%;
   font-size: var(--ll-tl-font-size-20);
+}
+
+p {
+  text-wrap: pretty;
 }
 
 .ll__container {
@@ -126,6 +130,10 @@ p {
   background: var(--ll-color-all-white);
   border-radius: var(--radius);
   color: var(--ll-text-color-dark);
+}
+
+img {
+  -webkit-user-drag: none; /* Chrome/Safari */
 }
 
 /* ------------------------------------------------ HERO */
@@ -369,6 +377,9 @@ p {
 .ll__big-blur-content-block__blur-container__right-part > img {
   height: 100%;
   margin-left: calc(var(--ll-average-gap) * 2);
+  -webkit-user-drag: none; /* Chrome/Safari */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .ll__big-blur-content-block__blur-container__right-part-filled {
@@ -508,6 +519,7 @@ p {
 .ll__bubbles-block__three-blocks-container {
   display: flex;
   gap: calc(var(--ll-average-gap) * 1);
+  height: 100%;
 }
 
 .ll__bubbles-block__two-blocks {
@@ -523,11 +535,16 @@ p {
   gap: calc(var(--ll-average-gap) * 0.3);
 }
 
+.ll__bubbles-block__person__info > h4 {
+  font-size: var(--ll-tl-font-size-28) !important;
+}
+
 .ll__bubbles-block__bubble {
   padding: calc(var(--space) * 3);
   display: flex;
   flex-direction: column;
   gap: calc(var(--ll-average-gap) * 1);
+  height: 100%;
 }
 
 .ll__bubbles-block__person__info p {
@@ -544,12 +561,15 @@ p {
   object-fit: cover;
   object-position: center;
   /* display: block; */
+  -webkit-user-drag: none; /* Chrome/Safari */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .ll__bubbles-block__person {
   display: flex;
   gap: calc(var(--ll-average-gap) * 1);
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
 }
 
@@ -729,4 +749,13 @@ p {
 
 .ll__title-container > button {
   margin-top: calc(var(--space) * 3);
+}
+
+/* ---------------- themeSwapper ---------------- */
+
+.ll__theme-toggle-fixed {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 9999;
 }

@@ -28,15 +28,23 @@ export function renderBubblesBlock(section) {
   const itemsPerGroup = total >= 6 ? 2 : 1;
 
   // Паттерн внешних классов пузырей, как у тебя в HTML:
-  // 1 glass, 2 white, 3 white, 4 glass, 5 glass, 6 white
-  const styleByIndex = [
-    "glass glass--strong is-liquid", // 1
-    "ll__white-container", // 2
-    "ll__white-container", // 3
-    "glass glass--strong is-liquid", // 4
-    "glass glass--strong is-liquid", // 5
-    "ll__white-container", // 6
-  ];
+  // 6 отзывов: 1 glass, 2 white, 3 white, 4 glass, 5 glass, 6 white
+  // 3 отзыва: 1 glass, 2 white, 3 glass
+  const styleByIndex =
+    total >= 6
+      ? [
+          "glass glass--strong is-liquid", // 1
+          "ll__white-container", // 2
+          "ll__white-container", // 3
+          "glass glass--strong is-liquid", // 4
+          "glass glass--strong is-liquid", // 5
+          "ll__white-container", // 6
+        ]
+      : [
+          "glass glass--strong is-liquid", // 1
+          "ll__white-container", // 2
+          "glass glass--strong is-liquid", // 3
+        ];
 
   const makeBubble = (t, idx1based) => {
     const bubble = document.createElement("div");

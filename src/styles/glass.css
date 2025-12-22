@@ -82,12 +82,12 @@
 }
 
 /* ДОБАВКА “LIQUID” (опционально, где поддерживается url() в backdrop-filter) */
-@supports (backdrop-filter: url(#glass-liquid)) {
+/* @supports (backdrop-filter: url(#glass-liquid)) {
   .glass.is-liquid {
     backdrop-filter: blur(var(--glass-blur)) url(#glass-liquid)
       saturate(var(--saturation));
   }
-}
+} */
 
 /* МОДИФИКАТОРЫ */
 .glass--pill {
