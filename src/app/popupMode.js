@@ -46,6 +46,10 @@ export function initPopupMode({
   const clamp01 = (v) => Math.max(0, Math.min(1, v));
   const safeInt = (v, fallback) =>
     Number.isFinite(v) && v > 0 ? Math.floor(v) : fallback;
+  const isCoarsePointer =
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(pointer: coarse)").matches;
 
   const totalTextSteps = safeInt(fadeTextsSteps, 4);
   const totalLandingSteps = safeInt(fadeLandingSteps, 6);
@@ -94,14 +98,27 @@ export function initPopupMode({
     document.body.appendChild(el);
     state.eraseCursorEl = el;
 
-    const onMove = (e) => {
+    const setPos = (x, y) => {
       if (!state.eraseCursorEl) return;
-      state.eraseCursorEl.style.left = `${e.clientX}px`;
-      state.eraseCursorEl.style.top = `${e.clientY}px`;
+      state.eraseCursorEl.style.left = `${x}px`;
+      state.eraseCursorEl.style.top = `${y}px`;
     };
 
+    // Чтобы квадрат не “висел” в (0,0) до первого движения пальца/мыши
+    setPos(window.innerWidth / 2, window.innerHeight / 2);
+
+    const onMove = (e) => setPos(e.clientX, e.clientY);
+    const onDown = (e) => setPos(e.clientX, e.clientY);
+
     window.addEventListener("pointermove", onMove, { passive: true });
-    el._cleanup = () => window.removeEventListener("pointermove", onMove);
+    if (isCoarsePointer) {
+      window.addEventListener("pointerdown", onDown, { passive: true });
+    }
+
+    el._cleanup = () => {
+      window.removeEventListener("pointermove", onMove);
+      if (isCoarsePointer) window.removeEventListener("pointerdown", onDown);
+    };
   }
 
   function removeEraseCursor() {

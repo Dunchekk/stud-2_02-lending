@@ -26,7 +26,7 @@ export function renderStatBlock(section) {
   titleContainer.append(h4, p, btn);
 
   const img = document.createElement("img");
-  img.setAttribute("src", c.imgSrc ?? "./src/assets/imgs/stst.svg");
+  img.setAttribute("src", c.imgSrc ?? "./src/assets/imgs/lend/stst.svg");
   img.setAttribute("alt", c.imgAlt ?? "");
 
   root.append(titleContainer, img);

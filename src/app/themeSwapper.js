@@ -6,21 +6,9 @@ const GRADIENT_THEMES = [
       color1: "#21618f",
       color2: "#3a6686",
       color3: "#85bddd",
-      color4: "#5eaad6",
+      color4: "#59b3e8",
       color5: "#2e6e9d",
       bgcolor: "#42637c",
-    },
-  },
-  {
-    id: "ember1",
-    label: "Ember",
-    colors: {
-      color1: "#000000",
-      color2: "#1d1628",
-      color3: "#000000",
-      color4: "#472d74",
-      color5: "#000000",
-      bgcolor: "#000000",
     },
   },
   {
@@ -35,6 +23,19 @@ const GRADIENT_THEMES = [
       bgcolor: "#6e3550",
     },
   },
+  {
+    id: "ember1",
+    label: "Ember",
+    colors: {
+      color1: "#000000",
+      color2: "#1d1628",
+      color3: "#000000",
+      color4: "#472d74",
+      color5: "#000000",
+      bgcolor: "#000000",
+    },
+  },
+
   {
     id: "lagoon3",
     label: "Lagoon",
@@ -109,7 +110,7 @@ const DARK_TEXT_CSS_VAR = "--ll-text-color-dark";
 
 export function createThemeSwapper({
   landingLayer,
-  defaultThemeId = GRADIENT_THEMES[4]?.id,
+  defaultThemeId = GRADIENT_THEMES[0]?.id,
   transitionDurationMs = 1300,
 } = {}) {
   if (!landingLayer) {

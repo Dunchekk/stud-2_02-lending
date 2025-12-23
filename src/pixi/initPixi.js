@@ -49,12 +49,12 @@ export function defineDunchekGradientElement() {
       this._noiseCanvas.width = 512;
       this._noiseCanvas.height = 512;
 
-      this._onPointerMove = (e) => {
+      this._applyPointerXY = (x, y) => {
         const w = Math.max(1, window.innerWidth);
         const h = Math.max(1, window.innerHeight);
 
-        const nx = Math.min(1, Math.max(0, e.clientX / w));
-        const ny = Math.min(1, Math.max(0, e.clientY / h));
+        const nx = Math.min(1, Math.max(0, x / w));
+        const ny = Math.min(1, Math.max(0, y / h));
 
         // Y -> seed target [-1..1]
         this._seedTarget = -1 + ny * 2;
@@ -63,6 +63,22 @@ export function defineDunchekGradientElement() {
         this._dispTarget = 0.8 + nx * 4.2; // 1..5
 
         this._dispNy = ny;
+      };
+
+      this._onPointerMove = (e) => {
+        this._applyPointerXY(e.clientX, e.clientY);
+      };
+
+      this._onTouchStart = (e) => {
+        const t = e.touches?.[0];
+        if (!t) return;
+        this._applyPointerXY(t.clientX, t.clientY);
+      };
+
+      this._onTouchMove = (e) => {
+        const t = e.touches?.[0];
+        if (!t) return;
+        this._applyPointerXY(t.clientX, t.clientY);
       };
 
       this._onResize = () => {
@@ -106,6 +122,10 @@ export function defineDunchekGradientElement() {
     connectedCallback() {
       this.style.display = "block";
       if (!this.style.height) this.style.height = "100vh";
+      const isCoarsePointer =
+        typeof window !== "undefined" &&
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(pointer: coarse)").matches;
 
       const noretina = this.getAttribute("noretina") === "true";
       const resolution = noretina
@@ -222,6 +242,14 @@ export function defineDunchekGradientElement() {
       window.addEventListener("pointermove", this._onPointerMove, {
         passive: true,
       });
+      if (isCoarsePointer) {
+        window.addEventListener("touchstart", this._onTouchStart, {
+          passive: true,
+        });
+        window.addEventListener("touchmove", this._onTouchMove, {
+          passive: true,
+        });
+      }
       window.addEventListener("resize", this._onResize, { passive: true });
 
       this._layoutToScreen();
@@ -230,6 +258,8 @@ export function defineDunchekGradientElement() {
 
     disconnectedCallback() {
       window.removeEventListener("pointermove", this._onPointerMove);
+      window.removeEventListener("touchstart", this._onTouchStart);
+      window.removeEventListener("touchmove", this._onTouchMove);
       window.removeEventListener("resize", this._onResize);
 
       if (this._app) {

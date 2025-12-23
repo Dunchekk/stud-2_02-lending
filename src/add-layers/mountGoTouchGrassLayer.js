@@ -6,8 +6,8 @@ export const GTG_CONFIG = {
   SPAWN_INTERVAL_MS: 27_000, // как часто спавнить картинку
   FLOAT_DURATION_MS: 25_000, // сколько плывёт одна картинка вверх (linear)
 
-  MAX_WIDTH_VW: 50, // максимум ширины картинки
-  MIN_WIDTH_VW: 35, // минимум ширины картинки (можно 0, если хочешь совсем рандом)
+  MAX_WIDTH_VW: 45, // максимум ширины картинки
+  MIN_WIDTH_VW: 30, // минимум ширины картинки (можно 0, если хочешь совсем рандом)
 
   // чтобы картинка не улетала сильно за края при translateX(-50%)
   MIN_X_PCT: 6, // левый предел в % (0..100)
@@ -34,6 +34,15 @@ function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function isMobileLike() {
+  if (typeof window === "undefined") return false;
+  if (typeof window.matchMedia !== "function") return false;
+  return (
+    window.matchMedia("(max-width: 500px)").matches ||
+    window.matchMedia("(pointer: coarse)").matches
+  );
+}
+
 /**
  * Монтирует слой поверх всего.
  * @param {{ mountTo?: HTMLElement }} [opts]
@@ -41,6 +50,10 @@ function pickRandom(arr) {
  */
 export function mountGoTouchGrassLayer(opts = {}) {
   const mountTo = opts.mountTo ?? document.body;
+  const getSpawnIntervalMs = () =>
+    isMobileLike()
+      ? Math.round(GTG_CONFIG.SPAWN_INTERVAL_MS / 1.5)
+      : GTG_CONFIG.SPAWN_INTERVAL_MS;
 
   if (!GTG_IMAGES.length) {
     // намеренно не кидаю ошибку, чтобы сборка не падала.
@@ -76,9 +89,14 @@ export function mountGoTouchGrassLayer(opts = {}) {
       `${GTG_CONFIG.FLOAT_DURATION_MS}ms`
     );
 
-    // Размер (vw) — отдельно, чтобы легко крутить
-    const w = rand(GTG_CONFIG.MIN_WIDTH_VW, GTG_CONFIG.MAX_WIDTH_VW);
-    item.style.setProperty("--gtg-w", `${w}vw`);
+    // Размер — отдельно, чтобы легко крутить
+    if (isMobileLike()) {
+      const w = rand(50, 80);
+      item.style.setProperty("--gtg-w", `${w}dvw`);
+    } else {
+      const w = rand(GTG_CONFIG.MIN_WIDTH_VW, GTG_CONFIG.MAX_WIDTH_VW);
+      item.style.setProperty("--gtg-w", `${w}vw`);
+    }
 
     // X позиция
     const xPct = clamp(
@@ -151,7 +169,8 @@ export function mountGoTouchGrassLayer(opts = {}) {
     clearSpawnTimer();
 
     const now = Date.now();
-    if (nextSpawnAtMs == null) nextSpawnAtMs = now + GTG_CONFIG.SPAWN_INTERVAL_MS;
+    const intervalMs = getSpawnIntervalMs();
+    if (nextSpawnAtMs == null) nextSpawnAtMs = now + intervalMs;
 
     let remaining = nextSpawnAtMs - now;
 
@@ -159,14 +178,14 @@ export function mountGoTouchGrassLayer(opts = {}) {
     // Мы не догоняем, а спавним максимум ОДНУ картинку и пересобираем расписание.
     if (remaining <= 0) {
       spawnOne();
-      nextSpawnAtMs = now + GTG_CONFIG.SPAWN_INTERVAL_MS;
-      remaining = GTG_CONFIG.SPAWN_INTERVAL_MS;
+      nextSpawnAtMs = now + intervalMs;
+      remaining = intervalMs;
     }
 
     spawnTimerId = window.setTimeout(() => {
       spawnTimerId = null;
       spawnOne();
-      nextSpawnAtMs = Date.now() + GTG_CONFIG.SPAWN_INTERVAL_MS;
+      nextSpawnAtMs = Date.now() + getSpawnIntervalMs();
       scheduleNextSpawn();
     }, remaining);
   }
@@ -177,7 +196,7 @@ export function mountGoTouchGrassLayer(opts = {}) {
 
     // можно сразу заспавнить первую картинку
     spawnOne();
-    nextSpawnAtMs = Date.now() + GTG_CONFIG.SPAWN_INTERVAL_MS;
+    nextSpawnAtMs = Date.now() + getSpawnIntervalMs();
     scheduleNextSpawn();
   }
 

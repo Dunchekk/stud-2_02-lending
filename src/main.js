@@ -59,7 +59,7 @@ mountTextLayer({
 
 // 6) фоновые слои (pixi/градиент) — под контентом
 const landingLayer = mountLandingLayer({
-  mountTo: app,
+  mountTo: document.body,
   zIndex: 1,
   attrs: { noretina: "true" },
 });

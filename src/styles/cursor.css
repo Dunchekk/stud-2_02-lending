@@ -12,7 +12,7 @@
 }
 
 :root {
-  --erase-cursor-size: 0.8vw;
+  --erase-cursor-size: clamp(12px, 0.9vw, 18px);
   --erase-cursor-color: #ff2a2a;
   --erase-transition: 420ms;
 }

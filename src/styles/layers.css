@@ -18,7 +18,7 @@
   /* X выставляем инлайном через left: ...% */
   transform: translateX(-50%) translateY(0);
 
-  width: min(var(--gtg-w, 30vw), 30vw);
+  width: clamp(30vw, var(--gtg-w, 30vw), 45vw);
   will-change: transform, opacity;
 
   /* движение вверх */

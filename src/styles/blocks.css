@@ -5,6 +5,7 @@
   inset: 0;
   width: 100vw;
   height: 100vh;
+  height: 100svh;
   z-index: 1;
 
   /* важно: чтобы клики проходили сквозь градиент */
@@ -132,8 +133,9 @@ p {
   color: var(--ll-text-color-dark);
 }
 
-img {
+#feed img {
   -webkit-user-drag: none; /* Chrome/Safari */
+  opacity: 80%;
 }
 
 /* ------------------------------------------------ HERO */
@@ -156,7 +158,7 @@ img {
 .ll__hero-block__img-container {
   width: 30%;
   height: 100vh;
-  background-image: url(../assets/imgs/Subtract.svg);
+  background-image: url(../assets/imgs/lend/Subtract.svg);
   background-size: cover;
   background-repeat: no-repeat;
   display: flex;
@@ -319,7 +321,7 @@ img {
 .ll__break-block {
   margin-left: calc(var(--ll-bleed) * -1);
   width: 100dvw;
-  background-image: url(../assets/imgs/white-block.svg);
+  background-image: url(../assets/imgs/lend/white-block.svg);
   background-size: cover;
   background-repeat: no-repeat;
   padding: var(--side-padding);
