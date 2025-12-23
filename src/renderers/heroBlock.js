@@ -79,8 +79,10 @@ export function renderHeroBlock(section) {
   tag.className = "ll__text-description-20-dark";
   tag.textContent = c.rightTopTag ?? "/#wearemorethenyouthink";
 
-  const navText = document.createElement("p");
+  const navText = document.createElement("div");
   navText.className = "ll__text-description-20-dark ll__hero-block-nav-text";
+  navText.setAttribute("data-hero-nav-list", "");
+  // fallback (если JS навигации не инициализировался)
   navText.innerHTML =
     c.rightNavTextHtml ??
     "Что это •<br>Общая информация •<br>Конкуренты •<br>Тарифы •<br>Отзывы •<br>FAG •";

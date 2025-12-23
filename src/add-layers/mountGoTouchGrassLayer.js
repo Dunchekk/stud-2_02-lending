@@ -59,6 +59,9 @@ export function mountGoTouchGrassLayer(opts = {}) {
   let activationTimerId = null;
   let spawnTimerId = null;
   let isActive = false;
+  let activationAtMs = Date.now() + GTG_CONFIG.ACTIVATION_DELAY_MS;
+  let nextSpawnAtMs = null;
+  let isPaused = false;
 
   function spawnOne() {
     if (!isActive) return;
@@ -119,30 +122,110 @@ export function mountGoTouchGrassLayer(opts = {}) {
     );
   }
 
+  function clearActivationTimer() {
+    if (activationTimerId) window.clearTimeout(activationTimerId);
+    activationTimerId = null;
+  }
+
+  function clearSpawnTimer() {
+    if (spawnTimerId) window.clearTimeout(spawnTimerId);
+    spawnTimerId = null;
+  }
+
+  function scheduleActivation() {
+    if (isActive) return;
+    clearActivationTimer();
+    const remaining = activationAtMs - Date.now();
+    if (remaining <= 0) {
+      activate();
+      return;
+    }
+    activationTimerId = window.setTimeout(() => {
+      activationTimerId = null;
+      activate();
+    }, remaining);
+  }
+
+  function scheduleNextSpawn() {
+    if (!isActive) return;
+    clearSpawnTimer();
+
+    const now = Date.now();
+    if (nextSpawnAtMs == null) nextSpawnAtMs = now + GTG_CONFIG.SPAWN_INTERVAL_MS;
+
+    let remaining = nextSpawnAtMs - now;
+
+    // Важно: когда вкладка была скрыта, таймеры могут "догнать" и выстрелить пачкой.
+    // Мы не догоняем, а спавним максимум ОДНУ картинку и пересобираем расписание.
+    if (remaining <= 0) {
+      spawnOne();
+      nextSpawnAtMs = now + GTG_CONFIG.SPAWN_INTERVAL_MS;
+      remaining = GTG_CONFIG.SPAWN_INTERVAL_MS;
+    }
+
+    spawnTimerId = window.setTimeout(() => {
+      spawnTimerId = null;
+      spawnOne();
+      nextSpawnAtMs = Date.now() + GTG_CONFIG.SPAWN_INTERVAL_MS;
+      scheduleNextSpawn();
+    }, remaining);
+  }
+
   function activate() {
     if (isActive) return;
     isActive = true;
 
     // можно сразу заспавнить первую картинку
     spawnOne();
-
-    spawnTimerId = window.setInterval(() => {
-      spawnOne();
-    }, GTG_CONFIG.SPAWN_INTERVAL_MS);
+    nextSpawnAtMs = Date.now() + GTG_CONFIG.SPAWN_INTERVAL_MS;
+    scheduleNextSpawn();
   }
 
-  activationTimerId = window.setTimeout(() => {
-    activate();
-  }, GTG_CONFIG.ACTIVATION_DELAY_MS);
+  function pause() {
+    if (isPaused) return;
+    isPaused = true;
+    clearActivationTimer();
+    clearSpawnTimer();
+  }
+
+  function resume() {
+    if (!isPaused) return;
+    isPaused = false;
+
+    // Не догоняем пачками — максимум один spawn в scheduleNextSpawn()
+    if (isActive) scheduleNextSpawn();
+    else scheduleActivation();
+  }
+
+  const onVisibility = () => {
+    if (typeof document === "undefined") return;
+    if (document.visibilityState === "hidden") pause();
+    else resume();
+  };
+
+  if (typeof document !== "undefined" && "visibilityState" in document) {
+    document.addEventListener("visibilitychange", onVisibility, { passive: true });
+  }
+
+  // стартуем расписание (учитывая, что вкладка может быть уже скрыта)
+  if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+    pause();
+  } else {
+    scheduleActivation();
+  }
 
   return {
     unmount() {
-      if (activationTimerId) window.clearTimeout(activationTimerId);
-      if (spawnTimerId) window.clearInterval(spawnTimerId);
+      if (typeof document !== "undefined") {
+        document.removeEventListener("visibilitychange", onVisibility);
+      }
+      clearActivationTimer();
+      clearSpawnTimer();
       layer.remove();
       activationTimerId = null;
       spawnTimerId = null;
       isActive = false;
+      isPaused = false;
     },
   };
 }

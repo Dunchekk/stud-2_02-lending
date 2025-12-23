@@ -9,7 +9,6 @@
  */
 export function renderBigBlurContentBlock(section) {
   const c = section.content ?? {};
-  const props = section.props ?? {};
 
   const root = document.createElement("div");
   root.className = "ll__big-blur-content-block ll__container";
@@ -58,31 +57,16 @@ export function renderBigBlurContentBlock(section) {
 
   blur.appendChild(leftPart);
 
-  // right part (IMAGE)
-  const imgSrc = c.imageSrc ?? "";
+  // right part (IMAGE) — единый шаблон, чтобы картинка не влияла на высоту контейнера
+  const rightPart = document.createElement("div");
+  rightPart.className = "ll__big-blur-content-block__blur-container__right-part";
 
-  if (props.rightPartStyle === "image-filled") {
-    // === ТОЧЬ-В-ТОЧЬ как у тебя во 2-м варианте ===
-    const img = document.createElement("img");
-    img.src = imgSrc;
-    img.className =
-      "ll__big-blur-content-block__blur-container__right-part-filled";
-    // намеренно не ставлю alt, чтобы повторить исходник 1:1
-    // (в верхнем варианте alt есть, но во втором — нет)
-    blur.appendChild(img);
-  } else {
-    // === верхний вариант (с оберткой right-part) ===
-    const rightPart = document.createElement("div");
-    rightPart.className =
-      "ll__big-blur-content-block__blur-container__right-part";
+  const img = document.createElement("img");
+  img.src = c.imageSrc ?? "";
+  img.alt = c.imageAlt ?? "";
 
-    const img = document.createElement("img");
-    img.src = imgSrc;
-    img.alt = c.imageAlt ?? "";
-
-    rightPart.appendChild(img);
-    blur.appendChild(rightPart);
-  }
+  rightPart.appendChild(img);
+  blur.appendChild(rightPart);
 
   root.append(h2, blur);
   return root;

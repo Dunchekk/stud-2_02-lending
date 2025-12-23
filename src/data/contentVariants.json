@@ -231,7 +231,7 @@
       "cardText": "Клуб — это подписка на\u00A0устойчивое состояние. Не\u00A0активность и\u00A0не\u00A0расписание, а\u00A0постоянный доступ к\u00A0среде, которая снижает фоновую нагрузку и\u00A0помогает сохранять внутреннее равновесие в\u00A0повседневной жизни.",
       "ctaText": "Узнать больше",
       "ctaHref": "#",
-      "imageSrc": "./src/assets/imgs/Group 5.png",
+      "imageSrc": "./src/assets/imgs/woman.png",
       "imageAlt": ""
     },
     "v2": {
@@ -240,7 +240,7 @@
       "cardText": "Это закрытое пространство для\u00A0тех, кто выбирает спокойствие как стратегию. Здесь нет необходимости быть активным — достаточно находиться внутри среды, которая работает на\u00A0уровне состояния.",
       "ctaText": "Присоединиться",
       "ctaHref": "#",
-      "imageSrc": "./src/assets/imgs/Group 5.png",
+      "imageSrc": "./src/assets/imgs/water.png",
       "imageAlt": ""
     },
     "v3": {
@@ -249,7 +249,7 @@
       "cardText": "Программа построена как непрерывная поддержка: без резких воздействий, без стимулов и\u00A0дедлайнов. Вы получаете стабильный фон, на\u00A0котором легче выдерживать нагрузку и\u00A0сохранять ясность.",
       "ctaText": "Подробнее о\u00A0программе",
       "ctaHref": "#",
-      "imageSrc": "./src/assets/imgs/Group 5.png",
+      "imageSrc": "./src/assets/imgs/forest.png",
       "imageAlt": ""
     },
     "v4": {
@@ -258,7 +258,7 @@
       "cardText": "Это сообщество объединяет людей, которые осознанно уменьшают давление среды. Клуб даёт доступ к\u00A0форматам и\u00A0материалам, поддерживающим ровное, нераздробленное состояние.",
       "ctaText": "Вступить в\u00A0клуб",
       "ctaHref": "#",
-      "imageSrc": "./src/assets/imgs/Group 5.png",
+      "imageSrc": "./src/assets/imgs/family.png",
       "imageAlt": ""
     },
     "v5": {
@@ -276,7 +276,7 @@
       "cardText": "Это не\u00A0курс и\u00A0не\u00A0марафон. Это формат, в\u00A0котором вы остаетесь внутри поддерживающей среды и\u00A0получаете доступ к\u00A0состоянию, а\u00A0не\u00A0к\u00A0списку действий.",
       "ctaText": "Посмотреть формат",
       "ctaHref": "#",
-      "imageSrc": "./src/assets/imgs/Group 5.png",
+      "imageSrc": "./src/assets/imgs/lal.png",
       "imageAlt": ""
     },
     "v7": {
@@ -294,7 +294,7 @@
       "cardText": "Содружество объединяет решения для\u00A0отдельных людей и\u00A0для\u00A0организаций. Корпоративные программы снижают фоновую перегруженность команд, а\u00A0личные форматы помогают сохранять ресурс в\u00A0условиях постоянной нагрузки.",
       "ctaText": "Узнать подробнее",
       "ctaHref": "#",
-      "imageSrc": "./src/assets/imgs/Group 5.png",
+      "imageSrc": "./src/assets/imgs/lal.png",
       "imageAlt": ""
     },
     "v9": {
@@ -303,7 +303,7 @@
       "cardText": "Внутри содружества доступны несколько направлений: корпоративные форматы для\u00A0команд, финансовые программы для\u00A0снижения тревожности, и\u00A0телесные практики для\u00A0поддержания устойчивого ритма.",
       "ctaText": "Открыть направления",
       "ctaHref": "#",
-      "imageSrc": "./src/assets/imgs/Group 5.png",
+      "imageSrc": "./src/assets/imgs/forest.png",
       "imageAlt": ""
     },
     "v10": {
@@ -312,7 +312,7 @@
       "cardText": "Содружество включает несколько программ: корпоративную для\u00A0среды команд, финансовую для\u00A0снижения фоновой тревожности, и\u00A0спортивную для\u00A0стабилизации телесного ритма. Все форматы направлены на\u00A0формирование устойчивого фона, а\u00A0не\u00A0на\u00A0краткосрочные эффекты.",
       "ctaText": "Выбрать программу",
       "ctaHref": "#",
-      "imageSrc": "./src/assets/imgs/Group 5.png",
+      "imageSrc": "./src/assets/imgs/woman.png",
       "imageAlt": ""
     }
   },
@@ -1057,42 +1057,42 @@
       "description": "Как это ощущается в\u00A0реальной жизни, без маркетинга.",
       "testimonials": [
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man-mid.jpg",
           "imgAlt": "",
           "title": "Антон, 35 лет",
           "subtitle": "Директор продуктовой компании",
           "text": "«Сначала сомневался, нужно ли мне это. Казалось, что я\u00A0и\u00A0так справляюсь. Сейчас понимаю: стало заметно спокойнее, и\u00A0отказываться от этого уже странно.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-yan.jpg",
           "imgAlt": "",
           "title": "Мария, 18 лет",
           "subtitle": "Продакт-дизайнер",
           "text": "«Не могу назвать один конкретный эффект, но фон перегруза ушёл. Жить и\u00A0работать стало ровнее, без лишнего внутреннего шума.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man1.jpg",
           "imgAlt": "",
           "title": "Илья, 41 год",
           "subtitle": "Руководитель отдела",
           "text": "«Здесь ничего не\u00A0требуют и\u00A0ни\u00A0к\u00A0чему не\u00A0подталкивают. Парадоксально, но именно поэтому это ощущается как поддержка.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-yang2.jpg",
           "imgAlt": "",
           "title": "Александра, 22 года",
           "subtitle": "Фрилансер",
           "text": "«Раньше я\u00A0постоянно искала, чем себя поддержать. Сейчас этого ощущения поиска больше нет, как будто стало проще дышать.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man-yom.jpg",
           "imgAlt": "",
           "title": "Кирилл, 34 лет",
           "subtitle": "Предприниматель",
           "text": "«Не ожидал, что формат без активностей может так влиять на\u00A0состояние. Но эффект устойчивый: меньше рывков, больше спокойного ритма.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-old6.jpg",
           "imgAlt": "",
           "title": "Ольга, 46 лет",
           "subtitle": "HR-директор",
@@ -1106,42 +1106,42 @@
       "description": "Что происходит с\u00A0бизнесом после внедрения.",
       "testimonials": [
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man1.jpg",
           "imgAlt": "",
           "title": "Егор, 34 года",
           "subtitle": "CEO технологической компании",
           "text": "«После внедрения команда стала спокойнее и\u00A0собраннее. Производительность выросла заметно, без выгорания. Честно: без этого мы бы не\u00A0вытянули прошлый год.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-mid2.jpg",
           "imgAlt": "",
           "title": "Наталья, 42 года",
           "subtitle": "Финансовый директор",
           "text": "«Я\u00A0скептически относилась к\u00A0таким форматам. Но рост эффективности и\u00A0снижение ошибок — это цифры, а\u00A0не\u00A0ощущения.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man-mid.jpg",
           "imgAlt": "",
           "title": "Павел, 37 лет",
           "subtitle": "Операционный директор",
           "text": "«Люди стали принимать решения быстрее и\u00A0увереннее. Компетентность выросла, потому что ушёл постоянный фоновый стресс. Все на 90% эффективнее!»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man-old2.jpg",
           "imgAlt": "",
           "title": "Алексей, 45 лет",
           "subtitle": "Собственник бизнеса",
           "text": "«Команда стала работать как будто в\u00A0другом режиме. Если бы мы не\u00A0подключили это решение, проект бы просто развалился.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-yang3.jpg",
           "imgAlt": "",
           "title": "Марина, 39 лет",
           "subtitle": "HR-партнёр",
           "text": "«Снижение текучки и\u00A0рост вовлечённости без давления — я\u00A0такого раньше не\u00A0видела. Команда стала просто сумасшедше продуктивной.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man-old9.jpg",
           "imgAlt": "",
           "title": "Сергей, 51 год",
           "subtitle": "Генеральный директор",
@@ -1155,42 +1155,42 @@
       "description": "Коротко и\u00A0по\u00A0делу.",
       "testimonials": [
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-yang.jpg",
           "imgAlt": "",
           "title": "Ксения, 31 год",
           "subtitle": "Маркетолог",
           "text": "«Я\u00A0перестала постоянно чувствовать, что не\u00A0справляюсь. И\u00A0это сильно поменяло моё отношение к\u00A0работе.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man-old3.jpg",
           "imgAlt": "",
           "title": "Роман, 44 года",
           "subtitle": "Архитектор",
           "text": "«Формат не\u00A0лезет в\u00A0жизнь и\u00A0не\u00A0просит внимания. Для меня это было решающим, потому что у\u00A0меня и\u00A0так перегруз.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-yang2.jpg",
           "imgAlt": "",
           "title": "Алина, 24 года",
           "subtitle": "Аналитик",
           "text": "«Я\u00A0боялась, что это будет ещё один источник шума. Оказалось — наоборот: стало тише и\u00A0понятнее внутри.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man-old2.jpg",
           "imgAlt": "",
           "title": "Виктор, 50 лет",
           "subtitle": "Руководитель проектов",
           "text": "«Отсутствие активности оказалось важнее любой мотивации. Я\u00A0стал выдерживать длинные дни без ощущения, что меня “съедает” нагрузка.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-mid2.jpg",
           "imgAlt": "",
           "title": "Юлия, 36 лет",
           "subtitle": "Психолог",
           "text": "«Мне нравится логика: работа с\u00A0фоном состояния, а\u00A0не\u00A0с\u00A0симптомами. Это заметно по тому, как меняется устойчивость.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man-yan.jpg",
           "imgAlt": "",
           "title": "Максим, 19 лет",
           "subtitle": "Консультант",
@@ -1204,21 +1204,21 @@
       "description": "Как это описывают без объяснений.",
       "testimonials": [
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-yang3.jpg",
           "imgAlt": "",
           "title": "Анна, 28 лет",
           "subtitle": "Исследователь",
           "text": "«Внутри стало ровнее. Не\u00A0ярче, не\u00A0веселее — просто стабильнее, как будто мозг перестал спешить.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man-old9.jpg",
           "imgAlt": "",
           "title": "Сергей, 45 лет",
           "subtitle": "IT-директор",
           "text": "«Здесь никто не\u00A0пытается доказать полезность и\u00A0продавить участие. Это подкупает: оно не\u00A0мешает и\u00A0поэтому остаётся.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-old7.jpg",
           "imgAlt": "",
           "title": "Елена, 52 года",
           "subtitle": "Консультант по\u00A0развитию",
@@ -1232,42 +1232,42 @@
       "description": "Что замечают родители и\u00A0как это звучит словами детей.",
       "testimonials": [
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-mid2.jpg",
           "imgAlt": "",
           "title": "Ирина, 38 лет",
           "subtitle": "Мама шестерых детей",
           "text": "«Я\u00A0не\u00A0шучу: после этого дома стало тише. Мои шестеро ангелочков меньше спорят, быстрее успокаиваются — прямо фантастика. Они сами говорят: “мама, стало спокойно”.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man-mid.jpg",
           "imgAlt": "",
           "title": "Олег, 41 год",
           "subtitle": "Отец двоих детей",
           "text": "«Сын сказал: “пап, у\u00A0меня внутри не\u00A0шумит”. Я\u00A0не\u00A0знаю, как он это формулирует, но реакций стало меньше и\u00A0они мягче. Теперь мы счастливы!»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-yang2.jpg",
           "imgAlt": "",
           "title": "Татьяна, 35 лет",
           "subtitle": "Мама",
           "text": "«Дочь начала сама замечать, что быстрее успокаивается. Говорит: “я\u00A0не\u00A0злюсь так долго”. Для нас это гигантская разница в\u00A0быту.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-old4.jpg",
           "imgAlt": "",
           "title": "Мария, 44 года",
           "subtitle": "Мама троих детей",
           "text": "«Мы ничего специально не\u00A0объясняли. Просто стало меньше истерик и\u00A0больше нормального ритма, балаган закончился. Дети сами говорят: “тут легко”.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man1.jpg",
           "imgAlt": "",
           "title": "Алексей, 39 лет",
           "subtitle": "Отец",
           "text": "«Ребёнок стал быстрее переключаться и\u00A0меньше тревожиться. Он\u00A0сказал: “я\u00A0могу быстрее перестать думать”. И\u00A0правильно, думать у\u00A0нас не\u00A0особо поощряется. Рекомендую это!»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-old.jpg",
           "imgAlt": "",
           "title": "Юлия, 54 года",
           "subtitle": "Мама подростка",
@@ -1281,21 +1281,21 @@
       "description": "Ответы, которые повторяются чаще всего.",
       "testimonials": [
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man-yom.jpg",
           "imgAlt": "",
           "title": "Артём, 36 лет",
           "subtitle": "Менеджер",
           "text": "«Я\u00A0стал спокойнее реагировать на\u00A0обычные дни. Раньше всё было как на\u00A0грани, теперь стало ровнее и\u00A0предсказуемее.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/wom-mid2.jpg",
           "imgAlt": "",
           "title": "Вера, 41 год",
           "subtitle": "Руководитель команды",
           "text": "«Усталость перестала накапливаться так быстро. Появилось ощущение запаса, и\u00A0это меняет вообще всё.»"
         },
         {
-          "imgSrc": "./src/assets/imgs/ppl/image10 (1).png",
+          "imgSrc": "./src/assets/imgs/avvv/man-old3.jpg",
           "imgAlt": "",
           "title": "Константин, 47 лет",
           "subtitle": "Предприниматель",

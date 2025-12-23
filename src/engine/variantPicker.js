@@ -1,6 +1,6 @@
 // src/engine/variantPicker.js
 
-import contentVariants from "../data/contentVariants.json";
+import contentVariants from "../data/contentVariantsWithAssets.js";
 
 /**
  * Выбор варианта контента для секции (используется resolveSection.js)

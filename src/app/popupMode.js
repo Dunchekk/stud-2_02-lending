@@ -12,14 +12,14 @@ export function initPopupMode({
     "button[data-theme-toggle].ll__theme-toggle--floating",
   ],
 
-  // где искать тексты для первых 5 кликов (в твоём случае — только #feed)
+  // где искать тексты для первых кликов (в твоём случае — только #feed)
   textsScopeSelector = "#feed",
 
-  delayBeforeTimerMs = 5000,
-  timerFrom = 90,
+  delayBeforeTimerMs = 1000,
+  timerFrom = 60,
 
-  fadeTextsSteps = 5,
-  fadeLandingSteps = 10,
+  fadeTextsSteps = 4,
+  fadeLandingSteps = 6,
 
   transitionMs = 420, // должно совпадать с --erase-transition
 } = {}) {
@@ -44,6 +44,14 @@ export function initPopupMode({
   const qs = (sel, root = document) => root.querySelector(sel);
   const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const clamp01 = (v) => Math.max(0, Math.min(1, v));
+  const safeInt = (v, fallback) =>
+    Number.isFinite(v) && v > 0 ? Math.floor(v) : fallback;
+
+  const totalTextSteps = safeInt(fadeTextsSteps, 4);
+  const totalLandingSteps = safeInt(fadeLandingSteps, 6);
+
+  const alphaByStep = (stepIndex1based, totalSteps) =>
+    clamp01(1 - stepIndex1based / totalSteps);
 
   function resolveNodes() {
     const textLayer = qs(textLayerSelector);
@@ -114,20 +122,14 @@ export function initPopupMode({
 
     // соберём “типографику” внутри #feed
     const candidatesSelector =
-      "h1,h2,h3,h4,h5,h6,p,li,span,small,em,strong,b,i,u,blockquote,cite,code,pre,a,button,label,.ll__stat-block img";
+      "h1,h2,h3,h4,h5,h6,p,li,span,small,em,strong,b,i,u,blockquote,cite,code,pre,a,button,label,img";
 
     const candidates = qsa(candidatesSelector, scope);
-    const statImages = qsa(".ll__stat-block img", scope);
 
     // исключим всё, что вдруг окажется в textLayer (на всякий)
     const filtered = candidates.filter(
       (el) => !state.textLayerRoot.contains(el)
     );
-    statImages.forEach((img) => {
-      if (state.textLayerRoot.contains(img)) return;
-      if (!filtered.includes(img)) filtered.push(img);
-    });
-
     filtered.forEach((el) => {
       el.classList.add("fade-texts-target");
       el.style.opacity = String(clamp01(state.textsOpacity));
@@ -257,21 +259,21 @@ export function initPopupMode({
 
     state.clicks += 1;
 
-    // 1) первые 5: тексты в #feed 100% -> 0%
-    if (state.clicks <= fadeTextsSteps) {
-      const alpha = 1 - state.clicks / fadeTextsSteps;
+    // 1) первые N: тексты в #feed 100% -> 0%
+    if (state.clicks <= totalTextSteps) {
+      const alpha = alphaByStep(state.clicks, totalTextSteps);
       setTextsOpacity(alpha);
       return;
     }
 
-    // 2) следующие 10: весь лендинг 100% -> 0%
-    const k = state.clicks - fadeTextsSteps;
+    // 2) следующие M: весь лендинг 100% -> 0%
+    const k = state.clicks - totalTextSteps;
 
-    if (k <= fadeLandingSteps) {
-      const alpha = 1 - k / fadeLandingSteps;
+    if (k <= totalLandingSteps) {
+      const alpha = alphaByStep(k, totalLandingSteps);
       setLandingOpacity(alpha);
 
-      if (k === fadeLandingSteps) {
+      if (k === totalLandingSteps) {
         window.setTimeout(() => {
           // гарантируем 0 и только потом display:none
           setLandingOpacity(0);

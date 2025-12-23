@@ -3,12 +3,12 @@ const GRADIENT_THEMES = [
     id: "aurora",
     label: "Aurora",
     colors: {
-      color1: "#5e4329ff",
-      color2: "#48331fff",
-      color3: "#6e4a29ff",
-      color4: "#875046ff",
-      color5: "#352a20ff",
-      bgcolor: "#352a20",
+      color1: "#21618f",
+      color2: "#3a6686",
+      color3: "#85bddd",
+      color4: "#5eaad6",
+      color5: "#2e6e9d",
+      bgcolor: "#42637c",
     },
   },
   {
@@ -36,27 +36,15 @@ const GRADIENT_THEMES = [
     },
   },
   {
-    id: "lagoon",
-    label: "Lagoon",
-    colors: {
-      color1: "#8C00FF",
-      color2: "#8C00FF",
-      color3: "#8a00b8",
-      color4: "#2e0054",
-      color5: "#8C00FF",
-      bgcolor: "#010811",
-    },
-  },
-  {
     id: "lagoon3",
     label: "Lagoon",
     colors: {
-      color1: "#21618f",
-      color2: "#3a6686",
-      color3: "#85bddd",
-      color4: "#5eaad6",
-      color5: "#2e6e9d",
-      bgcolor: "#42637c",
+      color1: "#5e4329",
+      color2: "#48331f",
+      color3: "#6e4a29",
+      color4: "#875046",
+      color5: "#352a20",
+      bgcolor: "#352a20",
     },
   },
   {
@@ -78,35 +66,35 @@ const TEXT_THEMES = [
     id: "aurora",
     label: "Aurora",
     colors: {
-      color5: "#220027",
+      color5: "#3a6686",
+    },
+  },
+  {
+    id: "ember1",
+    label: "Ember",
+    colors: {
+      color5: "#2d243d",
     },
   },
   {
     id: "ember",
     label: "Ember",
     colors: {
-      color5: "#004355",
-    },
-  },
-  {
-    id: "lagoon",
-    label: "Lagoon",
-    colors: {
-      color5: "#000d57",
-    },
-  },
-  {
-    id: "lagoon2",
-    label: "Lagoon",
-    colors: {
-      color5: "#00290c",
+      color5: "#6e3550",
     },
   },
   {
     id: "lagoon3",
     label: "Lagoon",
     colors: {
-      color5: "#296a99",
+      color5: "#352a20",
+    },
+  },
+  {
+    id: "lagoon2",
+    label: "Lagoon",
+    colors: {
+      color5: "#464444",
     },
   },
 ];
@@ -121,7 +109,7 @@ const DARK_TEXT_CSS_VAR = "--ll-text-color-dark";
 
 export function createThemeSwapper({
   landingLayer,
-  defaultThemeId = GRADIENT_THEMES[0]?.id,
+  defaultThemeId = GRADIENT_THEMES[4]?.id,
   transitionDurationMs = 1300,
 } = {}) {
   if (!landingLayer) {

@@ -24,6 +24,7 @@ import { mountTextLayer } from "./add-layers/mountTextLayer.js";
 import { createThemeSwapper } from "./app/themeSwapper.js";
 import { initQuestionOpenner } from "./app/questionOpenner.js";
 import { mountFixedThemeToggle } from "./app/mountFixedThemeToggle.js";
+import { initHeroSectionNav } from "./app/heroSectionNav.js";
 
 import { initPopupMode } from "./app/popupMode.js";
 
@@ -74,6 +75,7 @@ mountFixedThemeToggle({ mountTo: document.body });
 // 8) основной лендинг (строго по структуре из page.json)
 console.log("[engine] mounting sections:", page?.sections?.length);
 mountSections(feed, page.sections);
+initHeroSectionNav();
 
 // 9) бесконечная догрузка — после mountSections
 const infinite = createInfiniteLoader({
