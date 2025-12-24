@@ -18,9 +18,9 @@
   --side-padding: clamp(16px, 4vw, 48px);
   --ll-average-gap: clamp(10px, 1.38vw, 20px);
 
-  --p-max-width: 45dvh;
+  --p-max-width: 45vh;
 
-  --tl-height: min(calc(100dvh - calc(var(--side-padding) * 4)), 90dvh);
+  --tl-height: min(calc(100vh - calc(var(--side-padding) * 4)), 90vh);
 
   /* TYPO */
 

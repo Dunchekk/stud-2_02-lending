@@ -92,7 +92,7 @@ export function mountGoTouchGrassLayer(opts = {}) {
     // Размер — отдельно, чтобы легко крутить
     if (isMobileLike()) {
       const w = rand(50, 80);
-      item.style.setProperty("--gtg-w", `${w}dvw`);
+      item.style.setProperty("--gtg-w", `${w}vw`);
     } else {
       const w = rand(GTG_CONFIG.MIN_WIDTH_VW, GTG_CONFIG.MAX_WIDTH_VW);
       item.style.setProperty("--gtg-w", `${w}vw`);

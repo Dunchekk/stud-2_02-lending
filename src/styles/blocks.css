@@ -145,7 +145,7 @@ p {
   position: relative;
   top: 0;
   left: 0;
-  width: 100dvw;
+  width: 100vw;
   display: flex;
   flex-direction: row;
   gap: 0;
@@ -320,7 +320,7 @@ p {
 
 .ll__break-block {
   margin-left: calc(var(--ll-bleed) * -1);
-  width: 100dvw;
+  width: 100vw;
   background-image: url(../assets/imgs/lend/white-block.svg);
   background-size: cover;
   background-repeat: no-repeat;
@@ -685,7 +685,7 @@ p {
   position: relative;
   margin-left: calc(var(--ll-bleed) * -1);
 
-  /* width: 100dvw; */
+  /* width: 100vw; */
   display: flex;
   flex-direction: column;
   gap: calc(var(--ll-average-gap) * 2);
@@ -737,7 +737,7 @@ p {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  width: 100dvw;
+  width: 100vw;
   margin-left: calc(var(--ll-bleed) * -1);
 }
 

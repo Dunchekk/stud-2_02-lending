@@ -155,7 +155,7 @@
   .ll__hero-block {
     /* padding-top: calc(var(--space) / 3); */
     margin-top: calc(var(--space) * 5);
-    height: 80dvh;
+    height: 80vh;
     flex-direction: column;
   }
 
@@ -311,7 +311,7 @@
     left: 16px;
   }
 
-  /* go-touch-grass (mobile): размер задаётся в dvh через --gtg-w */
+  /* go-touch-grass (mobile): размер задаётся в vw через --gtg-w */
   .gtg-item {
     width: var(--gtg-w);
   }
