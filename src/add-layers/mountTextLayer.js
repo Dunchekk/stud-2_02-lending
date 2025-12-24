@@ -150,7 +150,44 @@ export function mountTextLayer({
     )
   );
   themeControls.append(...themeButtons);
-  left.append(toc, themeControls);
+
+  // Desktop-only contacts toggle (dot + contacts block)
+  const contactsWrap = el("div", { class: "tl__contactsWrap" });
+  const contacts = el("div", { class: "tl__contacts", "aria-hidden": "true" });
+  contacts.innerHTML =
+    "Всё, что у меня пока есть, лежит тут:<br>https://www.are.na/dunchek-v-n8odwyewl8c/web-vwmloid5pa<br><br>Обсудить/предложить/опровергнуть<br>что-то:<br>tg: @dunchek";
+
+  const dot = el("span", {
+    class: "tl__dotToggle",
+    role: "button",
+    tabindex: "0",
+    "aria-expanded": "false",
+    "aria-label": "Контакты",
+  });
+  dot.textContent = ".";
+
+  let isContactsOpen = false;
+  function setContactsOpen(next) {
+    isContactsOpen = Boolean(next);
+    contacts.style.display = isContactsOpen ? "block" : "none";
+    contacts.setAttribute("aria-hidden", String(!isContactsOpen));
+    dot.setAttribute("aria-expanded", String(isContactsOpen));
+    dot.classList.toggle("is-open", isContactsOpen);
+  }
+  setContactsOpen(false);
+
+  const toggleContacts = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContactsOpen(!isContactsOpen);
+  };
+  dot.addEventListener("click", toggleContacts);
+  dot.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") toggleContacts(e);
+  });
+
+  contactsWrap.append(contacts, dot);
+  left.append(toc, themeControls, contactsWrap);
 
   // Right: content + pager
   const right = el("main", { class: "tl__right" });

@@ -38,6 +38,12 @@ tl**empty — параграф-заглушка, если таб пустой.
   padding: var(--space);
 }
 
+@media (min-width: 501px) {
+  .tl {
+    top: calc(var(--side-padding) * 2);
+  }
+}
+
 .tl[data-theme="green"] {
   --tl-theme-text: var(--tl-color-black);
   --tl-theme-highlight: var(--tl-color-red);
@@ -87,6 +93,28 @@ tl**empty — параграф-заглушка, если таб пустой.
 
 .tl__themes {
   display: flex;
+}
+
+.tl__contactsWrap {
+  margin-top: auto;
+  width: 100%;
+}
+
+.tl__contacts {
+  display: none;
+  width: 100%;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.tl__dotToggle {
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tl__dotToggle.is-open {
+  text-decoration: underline;
 }
 
 .tl__themeBtn {

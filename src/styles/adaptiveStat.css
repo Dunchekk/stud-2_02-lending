@@ -330,6 +330,11 @@
     flex: 0 0 auto;
   }
 
+  /* contacts block + dot are desktop-only */
+  .tl__contactsWrap {
+    display: none !important;
+  }
+
   .tl__toc {
     max-height: 26svh;
     overflow-y: auto;
